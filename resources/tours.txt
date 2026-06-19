@@ -1,6 +1,6 @@
-Tour Volcan Osorno;Aventura;Volcan Osorno;45000;8
-Tour Saltos del Petrohue;Naturaleza;Saltos del Petrohue;25000;15
-Tour Lago Llanquihue;Lacustre;Lago Llanquihue;30000;0
-Tour Degustacion Local;Gastronomico;Frutillar;20000;12
-Tour Centro Historico;Cultural;Puerto Varas;15000;20
-Tour Kayak Familiar;Familiar;Rio Maullin;28000;6
+Tour Volcan Osorno;Aventura;Volcan Osorno;45000;8;45678912-3
+Tour Saltos del Petrohue;Naturaleza;Saltos del Petrohue;25000;15;12345678-9
+Tour Lago Llanquihue;Lacustre;Lago Llanquihue;30000;0;12345678-9
+Tour Degustacion Local;Gastronomico;Frutillar;20000;12;98765432-1
+Tour Centro Historico;Cultural;Puerto Varas;15000;20;98765432-1
+Tour Kayak Familiar;Familiar;Rio Maullin;28000;6;45678912-3

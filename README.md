@@ -1,41 +1,103 @@
-# LlanquihueTourApp
+# LlanquihueTour
+
+Sistema modular en Java para la agencia turística **Llanquihue Tour**. Carga
+guías, tours, clientes e inscripciones desde archivos de texto, los almacena en
+colecciones, y muestra, busca y filtra los resultados por consola.
+
+> Desarrollo Orientado a Objetos I — Experiencia 2, Semana 5
+> Organización modular y creación de una librería personalizada.
+
+---
 
 ## Descripción
 
-Aplicación Java que carga los tours de **Llanquihue Tour** desde un archivo de texto, crea objetos `Tour` y los almacena en una colección `ArrayList`. Luego recorre la colección y la filtra según distintas condiciones, mostrando los resultados por consola.
+La aplicación lee cuatro archivos de datos (`guias.txt`, `tours.txt`,
+`clientes.txt`, `inscripciones.txt`), convierte cada línea en objetos del modelo
+y los guarda en colecciones genéricas. La lógica está separada por
+responsabilidades en paquetes (`model`, `data`, `service`, `util`, `ui`),
+aplicando buenas prácticas de POO, composición entre clases, validaciones y
+manejo de excepciones.
 
 ---
 
 ## Estructura del proyecto
 
 ```
-LlanquihueTourApp/
-├── resources/
-│   └── tours.txt        → Datos de entrada
+LlanquihueTour/
+├── resources/              → Archivos de datos externos
+│   ├── guias.txt
+│   ├── tours.txt
+│   ├── clientes.txt
+│   └── inscripciones.txt
 └── src/
-    ├── model/
-    │   └── Tour.java     → Clase de dominio
-    ├── data/
-    │   └── GestorDatos.java → Lee tours.txt y construye el ArrayList
-    └── ui/
-        └── Main.java      → Recorrido y filtros sobre la colección
+    ├── model/              → Clases de dominio (qué es cada objeto)
+    │   ├── Persona.java     → Clase base (tiene una Direccion)
+    │   ├── Guia.java        → Hereda de Persona
+    │   ├── Cliente.java     → Hereda de Persona
+    │   ├── Direccion.java   → Clase compuesta
+    │   └── Tour.java        → Tiene un Guia y una lista de Cliente inscritos
+    ├── data/              → Lectura de archivos y construcción de objetos
+    │   └── GestorDatos.java
+    ├── service/           → Operaciones de negocio (mostrar, buscar, filtrar)
+    │   └── GestorTours.java
+    ├── util/              → Librería propia reutilizable
+    │   ├── Validador.java
+    │   ├── RutInvalidoException.java
+    │   └── FormatoArchivoInvalidoException.java
+    └── ui/                → Punto de entrada (coordina y muestra resultados)
+        └── Main.java
 ```
 
 ---
 
-## Formato de tours.txt
+## Paquetes y clases
 
-Cada línea representa un tour, con los datos separados por `;` (sin espacios):
+| Paquete   | Clase                            | Responsabilidad |
+|-----------|----------------------------------|-----------------|
+| `model`   | `Persona`                        | Clase base; **tiene una** `Direccion` |
+| `model`   | `Guia`, `Cliente`                | Heredan de `Persona` |
+| `model`   | `Direccion`                      | Dirección física (clase compuesta) |
+| `model`   | `Tour`                           | **Tiene un** `Guia` y **tiene una** lista de `Cliente` inscritos |
+| `data`    | `GestorDatos`                    | Lee archivos y crea objetos |
+| `service` | `GestorTours`                    | Mostrar, buscar y filtrar la colección |
+| `util`    | `Validador`                      | Validación reutilizable de campos (método `static`) |
+| `util`    | `RutInvalidoException`           | Excepción personalizada (RUT inválido) |
+| `util`    | `FormatoArchivoInvalidoException`| Excepción personalizada (línea mal formada) |
+| `ui`      | `Main`                           | Coordina la ejecución y muestra los resultados |
 
+### Composición entre clases
+
+- `Persona` **tiene una** `Direccion`.
+- `Tour` **tiene un** `Guia` (y ese guía, a su vez, tiene su `Direccion`).
+- `Tour` **tiene una** lista (`ArrayList`) de `Cliente` inscritos.
+
+---
+
+## Formato de los archivos
+
+**guias.txt** (12 campos separados por `;`):
 ```
-nombre;tipo;destino;precio;cupos
+nombre;apellido;rut;correo;calle;numero;ciudad;region;especialidad;idiomas;aniosExperiencia;disponible
 ```
 
-Ejemplo:
+**tours.txt** (6 campos; el último es el RUT del guía asignado):
+```
+nombre;tipo;destino;precio;cupos;rutGuia
+```
 
+**clientes.txt** (10 campos):
 ```
-Tour Volcan Osorno;Aventura;Volcan Osorno;45000;8
+nombre;apellido;rut;correo;calle;numero;ciudad;region;nacionalidad;tipoTurismo
 ```
+
+**inscripciones.txt** (2 campos; vincula un cliente a un tour):
+```
+rutCliente;nombreTour
+```
+
+Si una línea viene mal formada (campos incompletos, número inválido, RUT con mal
+formato, guía/tour/cliente inexistente, tour sin cupos o cliente ya inscrito), se
+lanza una excepción, se avisa por consola y se continúa con las demás líneas.
 
 ---
 
@@ -44,57 +106,57 @@ Tour Volcan Osorno;Aventura;Volcan Osorno;45000;8
 ### Desde IntelliJ IDEA
 
 1. Abrir la carpeta del proyecto en IntelliJ IDEA.
-2. Verificar que el SDK de Java esté configurado (File → Project Structure → SDK).
+2. Verificar el SDK de Java (File → Project Structure → SDK). Probado con **Java 21**.
 3. Ejecutar la clase `Main` ubicada en `src/ui/Main.java`.
 
 ### Desde terminal
 
 ```bash
-javac -encoding UTF-8 -d out -sourcepath src src/model/Tour.java src/data/GestorDatos.java src/ui/Main.java
+javac -encoding UTF-8 -d out -sourcepath src src/ui/Main.java
 java -cp out ui.Main
 ```
+
+> Ejecutar desde la raíz del proyecto, para que las rutas `resources/*.txt` se resuelvan correctamente.
 
 ---
 
 ## Funcionalidad
 
-- `GestorDatos` lee `resources/tours.txt` línea por línea, separa los datos con `split(";")` y crea objetos `Tour`.
-- Los objetos se almacenan en un `ArrayList<Tour>`.
-- `Main` recorre la colección completa con un `for-each` y la muestra por consola.
-- `Main` aplica dos filtros:
-  - Tours de tipo **Aventura**.
-  - Tours con **cupos disponibles** (`cupos > 0`).
+- `GestorDatos` lee cada archivo línea por línea, separa con `split(";")`, valida
+  la cantidad de campos, convierte números con `parseInt` y crea los objetos.
+- Los objetos se almacenan en `ArrayList<Guia>`, `ArrayList<Tour>` y `ArrayList<Cliente>`.
+- Cada `Tour` mantiene su propia lista (`ArrayList<Cliente>`) de inscritos,
+  controla los cupos disponibles y evita inscripciones duplicadas.
+- `GestorTours` recorre la colección con `for-each` y ofrece:
+  - Mostrar todos los tours.
+  - Buscar un tour por nombre.
+  - Filtrar por tipo, por cupos disponibles y por precio máximo.
+  - Contar tours por tipo usando un mapa clave-valor (`HashMap` ordenado con `TreeMap`).
+- Las inscripciones se cargan desde `inscripciones.txt` y se muestran agrupadas por tour.
+- `Main` solo coordina: carga los datos y muestra los resultados por consola.
 
 ---
 
-## Salida esperada
+## Demostración de validaciones
+
+Al final de la ejecución, `Main` incluye una sección **DEMOSTRACIÓN DE VALIDACIONES**
+que provoca errores a propósito (dentro de bloques `try-catch`) para evidenciar que
+las validaciones y excepciones del sistema funcionan. Por ejemplo:
 
 ```
---- TOURS DISPONIBLES - LLANQUIHUE TOUR ---
-
---- Listado completo ---
-Tour: Tour Volcan Osorno | Tipo: Aventura | Destino: Volcan Osorno | Precio: $45000 | Cupos disponibles: 8
-Tour: Tour Saltos del Petrohue | Tipo: Naturaleza | Destino: Saltos del Petrohue | Precio: $25000 | Cupos disponibles: 15
-Tour: Tour Lago Llanquihue | Tipo: Lacustre | Destino: Lago Llanquihue | Precio: $30000 | Cupos disponibles: 0
-Tour: Tour Degustacion Local | Tipo: Gastronomico | Destino: Frutillar | Precio: $20000 | Cupos disponibles: 12
-Tour: Tour Centro Historico | Tipo: Cultural | Destino: Puerto Varas | Precio: $15000 | Cupos disponibles: 20
-Tour: Tour Kayak Familiar | Tipo: Familiar | Destino: Rio Maullin | Precio: $28000 | Cupos disponibles: 6
-
---- Tours de tipo Aventura ---
-Tour: Tour Volcan Osorno | Tipo: Aventura | Destino: Volcan Osorno | Precio: $45000 | Cupos disponibles: 8
-
---- Tours con cupos disponibles ---
-Tour: Tour Volcan Osorno | Tipo: Aventura | Destino: Volcan Osorno | Precio: $45000 | Cupos disponibles: 8
-Tour: Tour Saltos del Petrohue | Tipo: Naturaleza | Destino: Saltos del Petrohue | Precio: $25000 | Cupos disponibles: 15
-Tour: Tour Degustacion Local | Tipo: Gastronomico | Destino: Frutillar | Precio: $20000 | Cupos disponibles: 12
-Tour: Tour Centro Historico | Tipo: Cultural | Destino: Puerto Varas | Precio: $15000 | Cupos disponibles: 20
-Tour: Tour Kayak Familiar | Tipo: Familiar | Destino: Rio Maullin | Precio: $28000 | Cupos disponibles: 6
+Dirección rechazada -> El número debe ser mayor que cero.
+Guía rechazado -> RUT inválido: 'SINFORMATO'. El formato debe ser XXXXXXXX-X.
+Tour rechazado -> El precio debe ser mayor a 0.
+Inscripción rechazada -> El tour "Tour Lago Llanquihue" no tiene cupos disponibles.
+Inscripción rechazada -> El cliente Asuna Yuuki ya está inscrito en el tour "Tour Volcan Osorno".
 ```
+
+Estos errores son intencionales: los archivos de datos reales permanecen válidos.
 
 ---
 
 ## Autora
 
 **Kamila Villablanca**
-Desarrollo Orientado a Objetos I — Semana 4
+Desarrollo Orientado a Objetos I — Semana 5
 Duoc UC — 2026

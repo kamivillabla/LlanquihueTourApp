@@ -1,0 +1,3 @@
+Mikasa;Ackerman;12345678-9;mikasa.ackerman@llanquihuetour.cl;Av. Frutillar;320;Llanquihue;Los Lagos;Rutas lacustres;Español, Inglés;8;true
+Erza;Scarlet;98765432-1;erza.scarlet@llanquihuetour.cl;Los Volcanes;85;Puerto Montt;Los Lagos;Gastronomia local;Español, Alemán;5;false
+Levi;Ackerman;45678912-3;levi.ackerman@llanquihuetour.cl;Portales;201;Llanquihue;Los Lagos;Montañismo;Español, Francés;12;true

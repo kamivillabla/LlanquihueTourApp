@@ -1,0 +1,3 @@
+Asuna;Yuuki;11223344-5;asuna.yuuki@correo.com;Calle Las Rosas;410;Santiago;Metropolitana;Chilena;Gastronomico
+Rukia;Kuchiki;55667788-K;rukia.kuchiki@mail.jp;Lago Llanquihue;10;Puerto Varas;Los Lagos;Japonesa;Cultural
+Nezuko;Kamado;22334455-6;nezuko.kamado@correo.cl;Av. Central;5;Llanquihue;Los Lagos;Chilena;Aventura

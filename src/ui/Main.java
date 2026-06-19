@@ -4,58 +4,164 @@ import data.GestorDatos;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Map;
+import model.Cliente;
+import model.Direccion;
+import model.Guia;
 import model.Tour;
+import service.GestorTours;
+import util.RutInvalidoException;
 
 /**
- * Carga los tours desde resources/tours.txt, recorre la colección
- * y muestra los resultados filtrados por consola.
+ * Clase principal del sistema Llanquihue Tour.
+ *
+ * <p>Su responsabilidad es <b>coordinar</b>: pide a la capa de datos que cargue
+ * guías, tours, clientes e inscripciones desde archivos, y luego usa la capa de
+ * servicio para mostrar, buscar y filtrar. La lógica de negocio vive en las
+ * otras clases.
  */
 public class Main {
 
     public static void main(String[] args) {
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
 
-        GestorDatos gestor = new GestorDatos();
-        ArrayList<Tour> tours = gestor.cargarTours("resources/tours.txt");
+        GestorDatos gestorDatos = new GestorDatos();
+        ArrayList<Guia> guias = gestorDatos.cargarGuias("resources/guias.txt");
+        ArrayList<Tour> tours = gestorDatos.cargarTours("resources/tours.txt", guias);
+        ArrayList<Cliente> clientes = gestorDatos.cargarClientes("resources/clientes.txt");
+        gestorDatos.cargarInscripciones("resources/inscripciones.txt", tours, clientes);
 
-        System.out.println("---TOURS DISPONIBLES - LLANQUIHUE TOUR ---");
+        GestorTours gestorTours = new GestorTours(tours);
 
-        mostrarTodos(tours);
-        mostrarPorTipo(tours, "Aventura");
-        mostrarConCupos(tours);
-    }
+        System.out.println("-----------------------------------------");
+        System.out.println("        SISTEMA LLANQUIHUE TOUR         ");
+        System.out.println("-----------------------------------------");
+        System.out.println("Guías cargados:     " + guias.size());
+        System.out.println("Tours cargados:     " + gestorTours.contarTours());
+        System.out.println("Clientes cargados:  " + clientes.size());
 
-    /**
-     * Recorre la colección completa e imprime cada tour.
-     */
-    private static void mostrarTodos(ArrayList<Tour> tours) {
-        System.out.println("\n--- Listado completo ---");
-        for (Tour tour : tours) {
-            System.out.println(tour);
+        System.out.println("\n--- LISTADO COMPLETO DE TOURS ---");
+        gestorTours.mostrarTodos();
+
+        System.out.println("\n--- TOURS DE TIPO AVENTURA ---");
+        gestorTours.filtrarPorTipo("Aventura");
+
+        System.out.println("\n--- TOURS CON CUPOS DISPONIBLES ---");
+        gestorTours.filtrarConCupos();
+
+        System.out.println("\n--- TOURS DE HASTA $25.000 ---");
+        gestorTours.filtrarPorPrecioMaximo(25000);
+
+        System.out.println("\n--- BÚSQUEDA: \"Tour Kayak Familiar\" ---");
+        gestorTours.buscarPorNombre("Tour Kayak Familiar");
+
+        System.out.println("\n--- CANTIDAD DE TOURS POR TIPO ---");
+        for (Map.Entry<String, Integer> entrada : gestorTours.contarPorTipo().entrySet()) {
+            System.out.println(entrada.getKey() + ": " + entrada.getValue());
         }
-    }
 
-    /**
-     * Filtra e imprime los tours cuyo tipo coincide con el indicado.
-     */
-    private static void mostrarPorTipo(ArrayList<Tour> tours, String tipo) {
-        System.out.println("\n--- Tours de tipo " + tipo + " ---");
+        System.out.println("\n--- CLIENTES INSCRITOS POR TOUR ---");
         for (Tour tour : tours) {
-            if (tour.getTipo().equalsIgnoreCase(tipo)) {
-                System.out.println(tour);
+            System.out.println(tour.getNombre() + " (" + tour.getInscritos().size() + " inscritos):");
+            if (tour.getInscritos().isEmpty()) {
+                System.out.println("   Sin inscritos.");
+            } else {
+                for (Cliente cliente : tour.getInscritos()) {
+                    System.out.println("   - " + cliente.getNombre() + " " + cliente.getApellido()
+                            + " (" + cliente.getNacionalidad() + ")");
+                }
             }
         }
+
+        System.out.println("\n--- GUÍAS TURÍSTICOS ---");
+        for (Guia guia : guias) {
+            System.out.println(guia);
+            System.out.println();
+        }
+
+        System.out.println("--- CLIENTES REGISTRADOS ---");
+        for (Cliente cliente : clientes) {
+            System.out.println(cliente);
+            System.out.println();
+        }
+
+        demostrarValidaciones(guias, tours, clientes);
+
+        System.out.println("-----------------------------------------");
+        System.out.println("            FIN DEL SISTEMA            ");
+        System.out.println("-----------------------------------------");
     }
 
     /**
-     * Filtra e imprime los tours que aún tienen cupos disponibles.
+     * Intenta crear objetos con datos inválidos y realizar acciones no
+     * permitidas, dentro de bloques try-catch, para demostrar que las
+     * validaciones y excepciones del sistema realmente funcionan.
      */
-    private static void mostrarConCupos(ArrayList<Tour> tours) {
-        System.out.println("\n--- Tours con cupos disponibles ---");
-        for (Tour tour : tours) {
-            if (tour.getCupos() > 0) {
-                System.out.println(tour);
+    private static void demostrarValidaciones(ArrayList<Guia> guias, ArrayList<Tour> tours,
+                                              ArrayList<Cliente> clientes) {
+        System.out.println("--- DEMOSTRACIÓN DE VALIDACIONES ---");
+        System.out.println("(Estos errores se provocan a propósito para mostrar que las validaciones funcionan)\n");
+
+        try {
+            new Direccion("Av. Demo", -5, "Llanquihue", "Los Lagos");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Dirección rechazada -> " + e.getMessage());
+        }
+
+        try {
+            Direccion direccionValida = new Direccion("Av. Demo", 100, "Llanquihue", "Los Lagos");
+            new Guia("Juan", "Pérez", "SINFORMATO", "juan@correo.cl",
+                    direccionValida, "Montañismo", "Español", 5, true);
+        } catch (RutInvalidoException e) {
+            System.out.println("Guía rechazado -> " + e.getMessage());
+        }
+
+        if (!guias.isEmpty()) {
+            try {
+                new Tour("Tour Demo", "Aventura", "Volcan Osorno", -1000, 8, guias.get(0));
+            } catch (IllegalArgumentException e) {
+                System.out.println("Tour rechazado -> " + e.getMessage());
             }
         }
+
+        Tour tourSinCupos = buscarTourSinCupos(tours);
+        if (tourSinCupos != null && !clientes.isEmpty()) {
+            try {
+                tourSinCupos.inscribirCliente(clientes.get(0));
+            } catch (IllegalStateException e) {
+                System.out.println("Inscripción rechazada -> " + e.getMessage());
+            }
+        }
+
+        Tour tourConInscritos = buscarTourConInscritos(tours);
+        if (tourConInscritos != null) {
+            try {
+                tourConInscritos.inscribirCliente(tourConInscritos.getInscritos().get(0));
+            } catch (IllegalStateException e) {
+                System.out.println("Inscripción rechazada -> " + e.getMessage());
+            }
+        }
+
+        System.out.println();
+    }
+
+    /** Devuelve el primer tour que ya no tiene cupos disponibles, o null si no hay. */
+    private static Tour buscarTourSinCupos(ArrayList<Tour> tours) {
+        for (Tour tour : tours) {
+            if (tour.getCuposDisponibles() <= 0) {
+                return tour;
+            }
+        }
+        return null;
+    }
+
+    /** Devuelve el primer tour que ya tiene clientes inscritos, o null si no hay. */
+    private static Tour buscarTourConInscritos(ArrayList<Tour> tours) {
+        for (Tour tour : tours) {
+            if (!tour.getInscritos().isEmpty()) {
+                return tour;
+            }
+        }
+        return null;
     }
 }
