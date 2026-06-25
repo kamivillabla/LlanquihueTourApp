@@ -1,6 +1,7 @@
 package ui;
 
 import data.GestorDatos;
+import data.GestorServicios;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -8,17 +9,14 @@ import java.util.Map;
 import model.Cliente;
 import model.Direccion;
 import model.Guia;
+import model.ServicioTuristico;
 import model.Tour;
 import service.GestorTours;
 import util.RutInvalidoException;
 
 /**
- * Clase principal del sistema Llanquihue Tour.
- *
- * <p>Su responsabilidad es <b>coordinar</b>: pide a la capa de datos que cargue
- * guías, tours, clientes e inscripciones desde archivos, y luego usa la capa de
- * servicio para mostrar, buscar y filtrar. La lógica de negocio vive en las
- * otras clases.
+ * Punto de entrada del sistema. Coordina: pide los datos a la capa de datos y
+ * usa los gestores para mostrarlos. La lógica vive en las otras clases.
  */
 public class Main {
 
@@ -87,15 +85,27 @@ public class Main {
 
         demostrarValidaciones(guias, tours, clientes);
 
+        mostrarServiciosTuristicos();
+
         System.out.println("-----------------------------------------");
         System.out.println("            FIN DEL SISTEMA            ");
         System.out.println("-----------------------------------------");
     }
 
+    /** Pide los servicios turísticos al gestor y los imprime uno por uno. */
+    private static void mostrarServiciosTuristicos() {
+        System.out.println("\n--- SERVICIOS TURÍSTICOS DISPONIBLES ---");
+        GestorServicios gestorServicios = new GestorServicios();
+        ArrayList<ServicioTuristico> servicios = gestorServicios.crearServicios();
+        for (ServicioTuristico servicio : servicios) {
+            System.out.println(servicio);
+        }
+        System.out.println();
+    }
+
     /**
-     * Intenta crear objetos con datos inválidos y realizar acciones no
-     * permitidas, dentro de bloques try-catch, para demostrar que las
-     * validaciones y excepciones del sistema realmente funcionan.
+     * Provoca errores a propósito (dentro de try-catch) para mostrar que las
+     * validaciones y excepciones del sistema funcionan.
      */
     private static void demostrarValidaciones(ArrayList<Guia> guias, ArrayList<Tour> tours,
                                               ArrayList<Cliente> clientes) {
