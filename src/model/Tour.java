@@ -3,15 +3,9 @@ package model;
 import java.util.ArrayList;
 
 /**
- * Representa un tour ofrecido por la agencia Llanquihue Tour.
- *
- * <p>Un Tour <b>tiene un</b> {@link Guia} asignado y <b>tiene una</b> lista de
- * {@link Cliente} inscritos: ambas son composición entre clases. A su vez, ese
- * Guía "tiene una" {@link Direccion}, por lo que el tour arrastra toda esa
- * información de dominio sin duplicarla.
- *
- * <p>El campo {@code cupos} representa la capacidad total del tour; los cupos
- * disponibles se calculan restando la cantidad de clientes inscritos.
+ * Un tour de la agencia. Tiene un {@link Guia} asignado y una lista de
+ * {@link Cliente} inscritos. Los cupos disponibles se calculan restando los
+ * inscritos a la capacidad total.
  */
 public class Tour {
 
@@ -23,16 +17,6 @@ public class Tour {
     private Guia guia;
     private ArrayList<Cliente> inscritos;
 
-    /**
-     * Crea un tour validando sus datos mediante los setters.
-     *
-     * @param nombre  nombre del tour
-     * @param tipo    categoría del tour (ej. Aventura, Cultural, Lacustre)
-     * @param destino lugar donde se realiza el tour
-     * @param precio  precio en pesos chilenos
-     * @param cupos   capacidad total de cupos del tour
-     * @param guia    guía turístico asignado al tour (composición)
-     */
     public Tour(String nombre, String tipo, String destino, int precio, int cupos, Guia guia) {
         setNombre(nombre);
         setTipo(tipo);
@@ -133,13 +117,7 @@ public class Tour {
         return cupos - inscritos.size();
     }
 
-    /**
-     * Inscribe un cliente en el tour si no está ya inscrito y quedan cupos.
-     *
-     * @param cliente cliente a inscribir
-     * @throws IllegalArgumentException si el cliente es nulo
-     * @throws IllegalStateException    si el cliente ya está inscrito o no hay cupos
-     */
+    /** Inscribe un cliente si no está ya inscrito y todavía quedan cupos. */
     public void inscribirCliente(Cliente cliente) {
         if (cliente == null) {
             throw new IllegalArgumentException("El cliente no puede ser nulo.");

@@ -2,10 +2,11 @@
 
 Sistema modular en Java para la agencia turística **Llanquihue Tour**. Carga
 guías, tours, clientes e inscripciones desde archivos de texto, los almacena en
-colecciones, y muestra, busca y filtra los resultados por consola.
+colecciones y muestra, busca y filtra los resultados por consola. Además modela
+los distintos tipos de servicios turísticos mediante una jerarquía de clases con
+herencia.
 
-> Desarrollo Orientado a Objetos I — Experiencia 2, Semana 5
-> Organización modular y creación de una librería personalizada.
+> Desarrollo Orientado a Objetos I — Duoc UC
 
 ---
 
@@ -15,8 +16,8 @@ La aplicación lee cuatro archivos de datos (`guias.txt`, `tours.txt`,
 `clientes.txt`, `inscripciones.txt`), convierte cada línea en objetos del modelo
 y los guarda en colecciones genéricas. La lógica está separada por
 responsabilidades en paquetes (`model`, `data`, `service`, `util`, `ui`),
-aplicando buenas prácticas de POO, composición entre clases, validaciones y
-manejo de excepciones.
+aplicando composición entre clases, herencia, validaciones y manejo de
+excepciones.
 
 ---
 
@@ -30,14 +31,19 @@ LlanquihueTour/
 │   ├── clientes.txt
 │   └── inscripciones.txt
 └── src/
-    ├── model/              → Clases de dominio (qué es cada objeto)
-    │   ├── Persona.java     → Clase base (tiene una Direccion)
-    │   ├── Guia.java        → Hereda de Persona
-    │   ├── Cliente.java     → Hereda de Persona
-    │   ├── Direccion.java   → Clase compuesta
-    │   └── Tour.java        → Tiene un Guia y una lista de Cliente inscritos
+    ├── model/              → Clases de dominio
+    │   ├── Persona.java             → Clase base (tiene una Direccion)
+    │   ├── Guia.java                → Hereda de Persona
+    │   ├── Cliente.java             → Hereda de Persona
+    │   ├── Direccion.java           → Clase compuesta
+    │   ├── Tour.java                → Tiene un Guia y una lista de Cliente inscritos
+    │   ├── ServicioTuristico.java   → Superclase: nombre, duracionHoras
+    │   ├── RutaGastronomica.java    → Hereda de ServicioTuristico (+ numeroDeParadas)
+    │   ├── PaseoLacustre.java       → Hereda de ServicioTuristico (+ tipoEmbarcacion)
+    │   └── ExcursionCultural.java   → Hereda de ServicioTuristico (+ lugarHistorico)
     ├── data/              → Lectura de archivos y construcción de objetos
-    │   └── GestorDatos.java
+    │   ├── GestorDatos.java         → Carga guías, tours, clientes e inscripciones
+    │   └── GestorServicios.java     → Crea los servicios turísticos de prueba
     ├── service/           → Operaciones de negocio (mostrar, buscar, filtrar)
     │   └── GestorTours.java
     ├── util/              → Librería propia reutilizable
@@ -58,18 +64,36 @@ LlanquihueTour/
 | `model`   | `Guia`, `Cliente`                | Heredan de `Persona` |
 | `model`   | `Direccion`                      | Dirección física (clase compuesta) |
 | `model`   | `Tour`                           | **Tiene un** `Guia` y **tiene una** lista de `Cliente` inscritos |
+| `model`   | `ServicioTuristico`              | Superclase: atributos comunes `nombre` y `duracionHoras` |
+| `model`   | `RutaGastronomica`               | **Es un** `ServicioTuristico` (+ `numeroDeParadas`) |
+| `model`   | `PaseoLacustre`                  | **Es un** `ServicioTuristico` (+ `tipoEmbarcacion`) |
+| `model`   | `ExcursionCultural`              | **Es un** `ServicioTuristico` (+ `lugarHistorico`) |
 | `data`    | `GestorDatos`                    | Lee archivos y crea objetos |
+| `data`    | `GestorServicios`                | Crea los servicios turísticos de prueba |
 | `service` | `GestorTours`                    | Mostrar, buscar y filtrar la colección |
 | `util`    | `Validador`                      | Validación reutilizable de campos (método `static`) |
 | `util`    | `RutInvalidoException`           | Excepción personalizada (RUT inválido) |
 | `util`    | `FormatoArchivoInvalidoException`| Excepción personalizada (línea mal formada) |
 | `ui`      | `Main`                           | Coordina la ejecución y muestra los resultados |
 
-### Composición entre clases
+### Composición entre clases (*tiene un/a*)
 
 - `Persona` **tiene una** `Direccion`.
 - `Tour` **tiene un** `Guia` (y ese guía, a su vez, tiene su `Direccion`).
 - `Tour` **tiene una** lista (`ArrayList`) de `Cliente` inscritos.
+
+### Herencia (*es un/a*)
+
+```
+Persona                       ServicioTuristico (superclase)
+├── Guia                      ├── RutaGastronomica   (+ numeroDeParadas)
+└── Cliente                   ├── PaseoLacustre      (+ tipoEmbarcacion)
+                              └── ExcursionCultural  (+ lugarHistorico)
+```
+
+Lo común vive una sola vez en la superclase y lo específico en cada subclase.
+Cada subclase llama a `super(...)` para inicializar lo heredado y sobrescribe
+`toString()` con `@Override`, reutilizando `super.toString()`.
 
 ---
 
@@ -133,7 +157,20 @@ java -cp out ui.Main
   - Filtrar por tipo, por cupos disponibles y por precio máximo.
   - Contar tours por tipo usando un mapa clave-valor (`HashMap` ordenado con `TreeMap`).
 - Las inscripciones se cargan desde `inscripciones.txt` y se muestran agrupadas por tour.
-- `Main` solo coordina: carga los datos y muestra los resultados por consola.
+- `GestorServicios` crea los servicios turísticos y `Main` los recorre mostrando
+  cada uno con su `toString()`, donde cada subclase imprime su propia información.
+
+Salida de los servicios turísticos en consola:
+
+```
+--- SERVICIOS TURÍSTICOS DISPONIBLES ---
+Servicio turístico: Sabores del Lago | Duración: 4 horas | Número de paradas: 5
+Servicio turístico: Ruta del Queso Artesanal | Duración: 3 horas | Número de paradas: 4
+Servicio turístico: Navegación Lago Llanquihue | Duración: 2 horas | Tipo de embarcación: Lancha turística
+Servicio turístico: Atardecer Lacustre | Duración: 3 horas | Tipo de embarcación: Catamarán
+Servicio turístico: Historia de Frutillar | Duración: 3 horas | Lugar histórico: Teatro del Lago
+Servicio turístico: Patrimonio de Puerto Varas | Duración: 4 horas | Lugar histórico: Iglesia del Sagrado Corazón
+```
 
 ---
 
@@ -158,5 +195,5 @@ Estos errores son intencionales: los archivos de datos reales permanecen válido
 ## Autora
 
 **Kamila Villablanca**
-Desarrollo Orientado a Objetos I — Semana 5
+Desarrollo Orientado a Objetos I
 Duoc UC — 2026

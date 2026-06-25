@@ -7,12 +7,8 @@ import java.util.TreeMap;
 import model.Tour;
 
 /**
- * Capa de servicio: administra la colección de tours y concentra las
- * operaciones de negocio (mostrar, buscar y filtrar).
- *
- * <p>Gracias a esta clase, la lógica no vive dentro de {@code Main}: el Main
- * solo coordina, mientras que aquí están los recorridos sobre el
- * {@code ArrayList<Tour>}.
+ * Maneja la colección de tours: mostrar, buscar y filtrar. Así Main solo
+ * coordina y los recorridos viven acá.
  */
 public class GestorTours {
 
@@ -80,11 +76,8 @@ public class GestorTours {
     }
 
     /**
-     * Colección complementaria clave-valor: cuenta cuántos tours hay por cada
-     * tipo. El conteo se arma en un {@link HashMap} y se devuelve dentro de un
-     * {@link TreeMap} para que las claves queden ordenadas alfabéticamente.
-     *
-     * @return mapa "tipo -> cantidad" ordenado por tipo
+     * Cuenta cuántos tours hay por tipo. Devuelve el mapa "tipo -> cantidad"
+     * ordenado alfabéticamente (usa {@link TreeMap}).
      */
     public Map<String, Integer> contarPorTipo() {
         HashMap<String, Integer> conteo = new HashMap<>();

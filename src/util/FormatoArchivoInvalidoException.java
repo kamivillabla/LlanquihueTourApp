@@ -1,9 +1,6 @@
 package util;
 
-/**
- * Excepción lanzada cuando una línea de un archivo de datos no cumple
- * el formato esperado (cantidad de campos incorrecta, campos vacíos, etc.).
- */
+/** Excepción para cuando una línea del archivo no cumple el formato esperado. */
 public class FormatoArchivoInvalidoException extends Exception {
 
     public FormatoArchivoInvalidoException(String mensaje) {

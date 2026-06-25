@@ -1,11 +1,8 @@
 package util;
 
 /**
- * Librería propia de validaciones reutilizables.
- *
- * <p>Sus métodos son {@code static}, por lo que se usan sin crear un objeto
- * {@code Validador} (por ejemplo {@code Validador.tieneCantidadCampos(partes, 6)}).
- * Centraliza chequeos que, de otro modo, se repetirían en varias clases.
+ * Validaciones reutilizables. Sus métodos son {@code static}, así se usan sin
+ * crear un objeto (ej. {@code Validador.tieneCantidadCampos(partes, 6)}).
  */
 public class Validador {
 

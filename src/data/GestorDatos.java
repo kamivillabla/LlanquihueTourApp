@@ -14,23 +14,14 @@ import util.RutInvalidoException;
 import util.Validador;
 
 /**
- * Capa de datos: lee los archivos de texto y transforma cada línea en objetos
- * del modelo ({@link Guia}, {@link Tour}, {@link Cliente}).
- *
- * <p>Cada línea se separa con {@code split(";")}, se valida la cantidad de
- * campos y se convierten los números con {@code parseInt}. Si una línea viene
- * mal formada, se captura la excepción, se avisa por consola y se continúa con
- * las demás (una línea inválida no detiene la carga completa).
+ * Lee los archivos de texto y arma los objetos del modelo. Si una línea viene
+ * mal formada, avisa por consola y sigue con las demás.
  */
 public class GestorDatos {
 
     /**
-     * Carga los guías desde un archivo .txt/.csv.
-     * Formato esperado (12 campos separados por ";"):
+     * Carga los guías desde el archivo. Formato (12 campos separados por ";"):
      * nombre;apellido;rut;correo;calle;numero;ciudad;region;especialidad;idiomas;aniosExperiencia;disponible
-     *
-     * @param rutaArchivo ruta del archivo de guías a leer
-     * @return lista de guías cargados (omite las líneas mal formadas)
      */
     public ArrayList<Guia> cargarGuias(String rutaArchivo) {
         ArrayList<Guia> guias = new ArrayList<>();
@@ -78,13 +69,8 @@ public class GestorDatos {
     }
 
     /**
-     * Carga los tours desde un archivo .txt/.csv y le asigna a cada uno su guía
-     * (composición), buscándolo por RUT dentro de la lista de guías ya cargada.
-     * Formato esperado (6 campos): nombre;tipo;destino;precio;cupos;rutGuia
-     *
-     * @param rutaArchivo ruta del archivo de tours a leer
-     * @param guias       lista de guías ya cargados, para asignar a cada tour
-     * @return lista de tours cargados (omite las líneas mal formadas)
+     * Carga los tours y a cada uno le asigna su guía, buscándolo por RUT en la
+     * lista ya cargada. Formato (6 campos): nombre;tipo;destino;precio;cupos;rutGuia
      */
     public ArrayList<Tour> cargarTours(String rutaArchivo, ArrayList<Guia> guias) {
         ArrayList<Tour> tours = new ArrayList<>();
@@ -131,12 +117,8 @@ public class GestorDatos {
     }
 
     /**
-     * Carga los clientes desde un archivo .txt/.csv.
-     * Formato esperado (10 campos):
+     * Carga los clientes desde el archivo. Formato (10 campos):
      * nombre;apellido;rut;correo;calle;numero;ciudad;region;nacionalidad;tipoTurismo
-     *
-     * @param rutaArchivo ruta del archivo de clientes a leer
-     * @return lista de clientes cargados (omite las líneas mal formadas)
      */
     public ArrayList<Cliente> cargarClientes(String rutaArchivo) {
         ArrayList<Cliente> clientes = new ArrayList<>();
@@ -182,14 +164,8 @@ public class GestorDatos {
     }
 
     /**
-     * Carga las inscripciones desde un archivo .txt/.csv e inscribe cada cliente
-     * en su tour (relación Tour - Cliente). Si no hay cupos o no se encuentra el
-     * cliente o el tour, se avisa por consola y se continúa.
-     * Formato esperado (2 campos): rutCliente;nombreTour
-     *
-     * @param rutaArchivo ruta del archivo de inscripciones a leer
-     * @param tours       lista de tours donde se inscribirán los clientes
-     * @param clientes    lista de clientes disponibles para inscribir
+     * Inscribe cada cliente en su tour según el archivo. Si falta el cliente o
+     * el tour, o no hay cupos, avisa y sigue. Formato (2 campos): rutCliente;nombreTour
      */
     public void cargarInscripciones(String rutaArchivo, ArrayList<Tour> tours, ArrayList<Cliente> clientes) {
         int numeroLinea = 0;

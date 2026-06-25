@@ -1,8 +1,7 @@
 package model;
 
 /**
- * Representa la dirección física de una persona vinculada a Llanquihue Tour.
- * Es la clase compuesta dentro de {@link Persona} (Persona "tiene una" Direccion).
+ * Dirección física de una persona. Una Persona "tiene una" Direccion (composición).
  */
 public class Direccion {
 
