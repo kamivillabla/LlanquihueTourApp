@@ -2,17 +2,16 @@ package ui;
 
 import data.GestorDatos;
 import data.GestorServicios;
+import demo.DemoValidaciones;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Map;
 import model.Cliente;
-import model.Direccion;
 import model.Guia;
 import model.ServicioTuristico;
 import model.Tour;
 import service.GestorTours;
-import util.RutInvalidoException;
 
 /**
  * Punto de entrada del sistema. Coordina: pide los datos a la capa de datos y
@@ -83,7 +82,7 @@ public class Main {
             System.out.println();
         }
 
-        demostrarValidaciones(guias, tours, clientes);
+        DemoValidaciones.ejecutar(guias, tours, clientes);
 
         mostrarServiciosTuristicos();
 
@@ -101,77 +100,5 @@ public class Main {
             System.out.println(servicio);
         }
         System.out.println();
-    }
-
-    /**
-     * Provoca errores a propósito (dentro de try-catch) para mostrar que las
-     * validaciones y excepciones del sistema funcionan.
-     */
-    private static void demostrarValidaciones(ArrayList<Guia> guias, ArrayList<Tour> tours,
-                                              ArrayList<Cliente> clientes) {
-        System.out.println("--- DEMOSTRACIÓN DE VALIDACIONES ---");
-        System.out.println("(Estos errores se provocan a propósito para mostrar que las validaciones funcionan)\n");
-
-        try {
-            new Direccion("Av. Demo", -5, "Llanquihue", "Los Lagos");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Dirección rechazada -> " + e.getMessage());
-        }
-
-        try {
-            Direccion direccionValida = new Direccion("Av. Demo", 100, "Llanquihue", "Los Lagos");
-            new Guia("Juan", "Pérez", "SINFORMATO", "juan@correo.cl",
-                    direccionValida, "Montañismo", "Español", 5, true);
-        } catch (RutInvalidoException e) {
-            System.out.println("Guía rechazado -> " + e.getMessage());
-        }
-
-        if (!guias.isEmpty()) {
-            try {
-                new Tour("Tour Demo", "Aventura", "Volcan Osorno", -1000, 8, guias.get(0));
-            } catch (IllegalArgumentException e) {
-                System.out.println("Tour rechazado -> " + e.getMessage());
-            }
-        }
-
-        Tour tourSinCupos = buscarTourSinCupos(tours);
-        if (tourSinCupos != null && !clientes.isEmpty()) {
-            try {
-                tourSinCupos.inscribirCliente(clientes.get(0));
-            } catch (IllegalStateException e) {
-                System.out.println("Inscripción rechazada -> " + e.getMessage());
-            }
-        }
-
-        Tour tourConInscritos = buscarTourConInscritos(tours);
-        if (tourConInscritos != null) {
-            try {
-                tourConInscritos.inscribirCliente(tourConInscritos.getInscritos().get(0));
-            } catch (IllegalStateException e) {
-                System.out.println("Inscripción rechazada -> " + e.getMessage());
-            }
-        }
-
-        System.out.println();
-    }
-
-    /** Devuelve el primer tour que ya no tiene cupos disponibles, o null si no hay. */
-    private static Tour buscarTourSinCupos(ArrayList<Tour> tours) {
-        for (Tour tour : tours) {
-            if (tour.getCuposDisponibles() <= 0) {
-                return tour;
-            }
-        }
-        return null;
-    }
-
-    /** Devuelve el primer tour que ya tiene clientes inscritos, o null si no hay. */
-    private static Tour buscarTourConInscritos(ArrayList<Tour> tours) {
-        for (Tour tour : tours) {
-            if (!tour.getInscritos().isEmpty()) {
-                return tour;
-            }
-        }
-        return null;
     }
 }
