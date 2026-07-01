@@ -1,23 +1,29 @@
 package model;
 
 /**
- * Clase base de los servicios turísticos de Llanquihue Tour. Reúne lo que
- * comparten todos: nombre y duración. Las subclases agregan lo suyo.
+ * Clase base de los servicios turísticos, con los datos comunes a todos:
+ * nombre y duración.
  */
 public class ServicioTuristico {
 
     private String nombre;
     private int duracionHoras;
 
+    /**
+     * @param nombre        nombre del servicio
+     * @param duracionHoras duración en horas
+     */
     public ServicioTuristico(String nombre, int duracionHoras) {
         setNombre(nombre);
         setDuracionHoras(duracionHoras);
     }
 
+    /** @return el nombre del servicio */
     public String getNombre() {
         return nombre;
     }
 
+    /** @param nombre nombre del servicio */
     public void setNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException("El nombre del servicio no puede estar vacío.");
@@ -28,10 +34,12 @@ public class ServicioTuristico {
         this.nombre = nombre;
     }
 
+    /** @return la duración en horas */
     public int getDuracionHoras() {
         return duracionHoras;
     }
 
+    /** @param duracionHoras duración en horas */
     public void setDuracionHoras(int duracionHoras) {
         if (duracionHoras <= 0) {
             throw new IllegalArgumentException("La duración debe ser mayor a 0 horas.");
@@ -40,6 +48,13 @@ public class ServicioTuristico {
             throw new IllegalArgumentException("La duración no puede superar 24 horas.");
         }
         this.duracionHoras = duracionHoras;
+    }
+
+    /** Muestra por consola la información del servicio; las subclases la sobrescriben. */
+    public void mostrarInformacion() {
+        System.out.println("Servicio turístico: " + nombre);
+        System.out.println("Duración: " + duracionHoras + " horas");
+        System.out.println("----------------------------------");
     }
 
     @Override

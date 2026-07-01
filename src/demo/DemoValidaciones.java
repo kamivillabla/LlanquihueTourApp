@@ -17,6 +17,9 @@ public class DemoValidaciones {
     /**
      * Ejecuta todos los casos de validación y muestra por consola cómo el
      * sistema rechaza los datos inválidos.
+     * @param clientes
+     * @param tours
+     * @param guias
      */
     public static void ejecutar(ArrayList<Guia> guias, ArrayList<Tour> tours,
                                 ArrayList<Cliente> clientes) {
@@ -66,7 +69,6 @@ public class DemoValidaciones {
         System.out.println();
     }
 
-    /** Devuelve el primer tour que ya no tiene cupos disponibles, o null si no hay. */
     private static Tour buscarTourSinCupos(ArrayList<Tour> tours) {
         for (Tour tour : tours) {
             if (tour.getCuposDisponibles() <= 0) {
@@ -76,7 +78,6 @@ public class DemoValidaciones {
         return null;
     }
 
-    /** Devuelve el primer tour que ya tiene clientes inscritos, o null si no hay. */
     private static Tour buscarTourConInscritos(ArrayList<Tour> tours) {
         for (Tour tour : tours) {
             if (!tour.getInscritos().isEmpty()) {
