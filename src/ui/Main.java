@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import model.Cliente;
 import model.Guia;
-import model.ServicioTuristico;
 import model.Tour;
 import service.GestorTours;
 
@@ -91,14 +90,12 @@ public class Main {
         System.out.println("-----------------------------------------");
     }
 
-    /** Pide los servicios turísticos al gestor y los imprime uno por uno. */
+    /** Carga la colección polimórfica de servicios turísticos y la muestra. */
     private static void mostrarServiciosTuristicos() {
         System.out.println("\n--- SERVICIOS TURÍSTICOS DISPONIBLES ---");
         GestorServicios gestorServicios = new GestorServicios();
-        ArrayList<ServicioTuristico> servicios = gestorServicios.crearServicios();
-        for (ServicioTuristico servicio : servicios) {
-            System.out.println(servicio);
-        }
+        gestorServicios.cargarServicios();
+        gestorServicios.mostrarServicios();
         System.out.println();
     }
 }

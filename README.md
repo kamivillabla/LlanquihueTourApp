@@ -4,7 +4,7 @@ Sistema modular en Java para la agencia turística **Llanquihue Tour**. Carga
 guías, tours, clientes e inscripciones desde archivos de texto, los almacena en
 colecciones y muestra, busca y filtra los resultados por consola. Además modela
 los distintos tipos de servicios turísticos mediante una jerarquía de clases con
-herencia.
+herencia y los recorre aplicando **polimorfismo**.
 
 > Desarrollo Orientado a Objetos I — Duoc UC
 
@@ -43,7 +43,7 @@ LlanquihueTour/
     │   └── ExcursionCultural.java   → Hereda de ServicioTuristico (+ lugarHistorico)
     ├── data/              → Lectura de archivos y construcción de objetos
     │   ├── GestorDatos.java         → Carga guías, tours, clientes e inscripciones
-    │   └── GestorServicios.java     → Crea los servicios turísticos de prueba
+    │   └── GestorServicios.java     → Colección polimórfica List<ServicioTuristico>
     ├── service/           → Operaciones de negocio (mostrar, buscar, filtrar)
     │   └── GestorTours.java
     ├── util/              → Librería propia reutilizable
@@ -69,7 +69,7 @@ LlanquihueTour/
 | `model`   | `PaseoLacustre`                  | **Es un** `ServicioTuristico` (+ `tipoEmbarcacion`) |
 | `model`   | `ExcursionCultural`              | **Es un** `ServicioTuristico` (+ `lugarHistorico`) |
 | `data`    | `GestorDatos`                    | Lee archivos y crea objetos |
-| `data`    | `GestorServicios`                | Crea los servicios turísticos de prueba |
+| `data`    | `GestorServicios`                | Colección polimórfica `List<ServicioTuristico>`: la carga y la recorre |
 | `service` | `GestorTours`                    | Mostrar, buscar y filtrar la colección |
 | `util`    | `Validador`                      | Validación reutilizable de campos (método `static`) |
 | `util`    | `RutInvalidoException`           | Excepción personalizada (RUT inválido) |
@@ -92,8 +92,34 @@ Persona                       ServicioTuristico (superclase)
 ```
 
 Lo común vive una sola vez en la superclase y lo específico en cada subclase.
-Cada subclase llama a `super(...)` para inicializar lo heredado y sobrescribe
-`toString()` con `@Override`, reutilizando `super.toString()`.
+Cada subclase llama a `super(...)` para inicializar lo heredado y sobrescribe con
+`@Override` tanto `toString()` (reutilizando `super.toString()`) como
+`mostrarInformacion()`.
+
+### Polimorfismo
+
+`ServicioTuristico` define el método `mostrarInformacion()` con una
+implementación base, y cada subclase lo **sobrescribe** (`@Override`) para
+imprimir sus datos propios (paradas, embarcación o lugar histórico).
+
+`GestorServicios` guarda todos los servicios en **una sola colección
+polimórfica**:
+
+```java
+private final List<ServicioTuristico> servicios = new ArrayList<>();
+```
+
+En esa lista conviven objetos de las tres subclases. Al recorrerla con
+`for-each` desde una referencia de tipo superclase, Java ejecuta
+automáticamente la versión correcta del método según el objeto real:
+
+```java
+for (ServicioTuristico servicio : servicios) {
+    servicio.mostrarInformacion();   // cada tipo responde a su manera
+}
+```
+
+> Una lista, varios tipos de objetos, un mismo método, distintos resultados.
 
 ---
 
@@ -157,19 +183,39 @@ java -cp out ui.Main
   - Filtrar por tipo, por cupos disponibles y por precio máximo.
   - Contar tours por tipo usando un mapa clave-valor (`HashMap` ordenado con `TreeMap`).
 - Las inscripciones se cargan desde `inscripciones.txt` y se muestran agrupadas por tour.
-- `GestorServicios` crea los servicios turísticos y `Main` los recorre mostrando
-  cada uno con su `toString()`, donde cada subclase imprime su propia información.
+- `GestorServicios` carga la colección polimórfica `List<ServicioTuristico>` con
+  seis servicios de las tres subclases y la recorre con `for-each` llamando a
+  `mostrarInformacion()` desde la referencia de la superclase; cada objeto
+  ejecuta su propia versión del método (polimorfismo). `Main` invoca este flujo.
 
 Salida de los servicios turísticos en consola:
 
 ```
 --- SERVICIOS TURÍSTICOS DISPONIBLES ---
-Servicio turístico: Sabores del Lago | Duración: 4 horas | Número de paradas: 5
-Servicio turístico: Ruta del Queso Artesanal | Duración: 3 horas | Número de paradas: 4
-Servicio turístico: Navegación Lago Llanquihue | Duración: 2 horas | Tipo de embarcación: Lancha turística
-Servicio turístico: Atardecer Lacustre | Duración: 3 horas | Tipo de embarcación: Catamarán
-Servicio turístico: Historia de Frutillar | Duración: 3 horas | Lugar histórico: Teatro del Lago
-Servicio turístico: Patrimonio de Puerto Varas | Duración: 4 horas | Lugar histórico: Iglesia del Sagrado Corazón
+Ruta gastronómica: Sabores del Lago
+Duración: 4 horas
+Número de paradas: 5
+----------------------------------
+Ruta gastronómica: Ruta del Queso Artesanal
+Duración: 3 horas
+Número de paradas: 4
+----------------------------------
+Paseo lacustre: Navegación Lago Llanquihue
+Duración: 2 horas
+Tipo de embarcación: Lancha turística
+----------------------------------
+Paseo lacustre: Atardecer Lacustre
+Duración: 3 horas
+Tipo de embarcación: Catamarán
+----------------------------------
+Excursión cultural: Historia de Frutillar
+Duración: 3 horas
+Lugar histórico: Teatro del Lago
+----------------------------------
+Excursión cultural: Patrimonio de Puerto Varas
+Duración: 4 horas
+Lugar histórico: Iglesia del Sagrado Corazón
+----------------------------------
 ```
 
 ---
