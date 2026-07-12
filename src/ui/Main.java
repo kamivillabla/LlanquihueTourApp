@@ -1,101 +1,60 @@
 package ui;
 
 import data.GestorDatos;
-import data.GestorServicios;
-import demo.DemoValidaciones;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
+import data.GestorEntidades;
 import java.util.ArrayList;
-import java.util.Map;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import model.Cliente;
-import model.Guia;
+import model.GuiaTuristico;
 import model.Tour;
 import service.GestorTours;
 
 /**
- * Punto de entrada del sistema. Coordina: pide los datos a la capa de datos y
- * usa los gestores para mostrarlos. La lógica vive en las otras clases.
+ * Punto de entrada del sistema. Carga los datos y abre {@link VentanaPrincipal},
+ * la ventana (JFrame) que concentra toda la interacción del sistema.
  */
 public class Main {
 
     public static void main(String[] args) {
-        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+        aplicarLookAndFeel();
 
         GestorDatos gestorDatos = new GestorDatos();
-        ArrayList<Guia> guias = gestorDatos.cargarGuias("resources/guias.txt");
+        ArrayList<GuiaTuristico> guias = gestorDatos.cargarGuias("resources/guias.txt");
         ArrayList<Tour> tours = gestorDatos.cargarTours("resources/tours.txt", guias);
         ArrayList<Cliente> clientes = gestorDatos.cargarClientes("resources/clientes.txt");
         gestorDatos.cargarInscripciones("resources/inscripciones.txt", tours, clientes);
-
         GestorTours gestorTours = new GestorTours(tours);
+        GestorEntidades gestorEntidades = new GestorEntidades();
 
-        System.out.println("-----------------------------------------");
-        System.out.println("        SISTEMA LLANQUIHUE TOUR         ");
-        System.out.println("-----------------------------------------");
-        System.out.println("Guías cargados:     " + guias.size());
-        System.out.println("Tours cargados:     " + gestorTours.contarTours());
-        System.out.println("Clientes cargados:  " + clientes.size());
-
-        System.out.println("\n--- LISTADO COMPLETO DE TOURS ---");
-        gestorTours.mostrarTodos();
-
-        System.out.println("\n--- TOURS DE TIPO AVENTURA ---");
-        gestorTours.filtrarPorTipo("Aventura");
-
-        System.out.println("\n--- TOURS CON CUPOS DISPONIBLES ---");
-        gestorTours.filtrarConCupos();
-
-        System.out.println("\n--- TOURS DE HASTA $25.000 ---");
-        gestorTours.filtrarPorPrecioMaximo(25000);
-
-        System.out.println("\n--- BÚSQUEDA: \"Tour Kayak Familiar\" ---");
-        gestorTours.buscarPorNombre("Tour Kayak Familiar");
-
-        System.out.println("\n--- CANTIDAD DE TOURS POR TIPO ---");
-        for (Map.Entry<String, Integer> entrada : gestorTours.contarPorTipo().entrySet()) {
-            System.out.println(entrada.getKey() + ": " + entrada.getValue());
-        }
-
-        System.out.println("\n--- CLIENTES INSCRITOS POR TOUR ---");
-        for (Tour tour : tours) {
-            System.out.println(tour.getNombre() + " (" + tour.getInscritos().size() + " inscritos):");
-            if (tour.getInscritos().isEmpty()) {
-                System.out.println("   Sin inscritos.");
-            } else {
-                for (Cliente cliente : tour.getInscritos()) {
-                    System.out.println("   - " + cliente.getNombre() + " " + cliente.getApellido()
-                            + " (" + cliente.getNacionalidad() + ")");
-                }
+        if (!gestorDatos.getAvisos().isEmpty()) {
+            StringBuilder texto = new StringBuilder();
+            for (String aviso : gestorDatos.getAvisos()) {
+                texto.append(aviso).append("\n");
             }
+            JOptionPane.showMessageDialog(null, texto.toString(), "Avisos de carga de datos",
+                    JOptionPane.WARNING_MESSAGE);
         }
 
-        System.out.println("\n--- GUÍAS TURÍSTICOS ---");
-        for (Guia guia : guias) {
-            System.out.println(guia);
-            System.out.println();
-        }
-
-        System.out.println("--- CLIENTES REGISTRADOS ---");
-        for (Cliente cliente : clientes) {
-            System.out.println(cliente);
-            System.out.println();
-        }
-
-        DemoValidaciones.ejecutar(guias, tours, clientes);
-
-        mostrarServiciosTuristicos();
-
-        System.out.println("-----------------------------------------");
-        System.out.println("            FIN DEL SISTEMA            ");
-        System.out.println("-----------------------------------------");
+        SwingUtilities.invokeLater(() -> {
+            VentanaPrincipal ventana = new VentanaPrincipal(guias, tours, clientes, gestorTours, gestorEntidades);
+            ventana.setVisible(true);
+        });
     }
 
-    /** Carga la colección polimórfica de servicios turísticos y la muestra. */
-    private static void mostrarServiciosTuristicos() {
-        System.out.println("\n--- SERVICIOS TURÍSTICOS DISPONIBLES ---");
-        GestorServicios gestorServicios = new GestorServicios();
-        gestorServicios.cargarServicios();
-        gestorServicios.mostrarServicios();
-        System.out.println();
+    /** Si Nimbus no está disponible, sigue con el Look and Feel por defecto. */
+    private static void aplicarLookAndFeel() {
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    return;
+                }
+            }
+        } catch (ReflectiveOperationException | UnsupportedLookAndFeelException e) {
+            // intencionalmente vacío
+        }
     }
 }

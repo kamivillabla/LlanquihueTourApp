@@ -5,6 +5,15 @@ package model;
  */
 public class Direccion {
 
+    /** Patrón de calle: letras, números, espacios y puntuación básica. */
+    public static final String PATRON_CALLE = "[\\p{L}\\p{N} .#,-]+";
+    public static final int LARGO_MAXIMO_CALLE = 60;
+    /** Patrón de ciudad/región: solo letras y espacios. */
+    public static final String PATRON_CIUDAD_REGION = "[\\p{L} ]+";
+    public static final int LARGO_MAXIMO_CIUDAD_REGION = 40;
+    public static final int NUMERO_MINIMO = 1;
+    public static final int NUMERO_MAXIMO = 99999;
+
     private String calle;
     private int numero;
     private String ciudad;
@@ -23,10 +32,13 @@ public class Direccion {
 
     public void setCalle(String calle) {
         if (calle == null || calle.isBlank()) {
-            throw new IllegalArgumentException("La calle no puede estar vacía.");
+            throw new IllegalArgumentException("Falta la calle.");
         }
-        if (!calle.matches("[\\p{L}\\p{N} .#,-]+")) {
-            throw new IllegalArgumentException("La calle contiene caracteres no permitidos.");
+        if (calle.length() > LARGO_MAXIMO_CALLE) {
+            throw new IllegalArgumentException("Esa calle es muy larga (máximo " + LARGO_MAXIMO_CALLE + " caracteres).");
+        }
+        if (!calle.matches(PATRON_CALLE)) {
+            throw new IllegalArgumentException("Usa solo letras, números, espacios, puntos, numeral (#), comas o guiones.");
         }
         this.calle = calle;
     }
@@ -36,8 +48,9 @@ public class Direccion {
     }
 
     public void setNumero(int numero) {
-        if (numero <= 0) {
-            throw new IllegalArgumentException("El número debe ser mayor que cero.");
+        if (numero < NUMERO_MINIMO || numero > NUMERO_MAXIMO) {
+            throw new IllegalArgumentException(
+                    "Ingresa un número de dirección válido (entre " + NUMERO_MINIMO + " y " + NUMERO_MAXIMO + ").");
         }
         this.numero = numero;
     }
@@ -48,10 +61,13 @@ public class Direccion {
 
     public void setCiudad(String ciudad) {
         if (ciudad == null || ciudad.isBlank()) {
-            throw new IllegalArgumentException("La ciudad no puede estar vacía.");
+            throw new IllegalArgumentException("Falta la ciudad.");
         }
-        if (!ciudad.matches("[\\p{L} ]+")) {
-            throw new IllegalArgumentException("La ciudad solo puede contener letras y espacios.");
+        if (ciudad.length() > LARGO_MAXIMO_CIUDAD_REGION) {
+            throw new IllegalArgumentException("Esa ciudad es muy larga (máximo " + LARGO_MAXIMO_CIUDAD_REGION + " caracteres).");
+        }
+        if (!ciudad.matches(PATRON_CIUDAD_REGION)) {
+            throw new IllegalArgumentException("La ciudad solo puede tener letras, sin números ni símbolos.");
         }
         this.ciudad = ciudad;
     }
@@ -62,10 +78,13 @@ public class Direccion {
 
     public void setRegion(String region) {
         if (region == null || region.isBlank()) {
-            throw new IllegalArgumentException("La región no puede estar vacía.");
+            throw new IllegalArgumentException("Falta la región.");
         }
-        if (!region.matches("[\\p{L} ]+")) {
-            throw new IllegalArgumentException("La región solo puede contener letras y espacios.");
+        if (region.length() > LARGO_MAXIMO_CIUDAD_REGION) {
+            throw new IllegalArgumentException("Esa región es muy larga (máximo " + LARGO_MAXIMO_CIUDAD_REGION + " caracteres).");
+        }
+        if (!region.matches(PATRON_CIUDAD_REGION)) {
+            throw new IllegalArgumentException("La región solo puede tener letras, sin números ni símbolos.");
         }
         this.region = region;
     }

@@ -5,39 +5,31 @@ public class PaseoLacustre extends ServicioTuristico {
 
     private String tipoEmbarcacion;
 
-    /**
-     * @param nombre          nombre del paseo
-     * @param duracionHoras   duración en horas
-     * @param tipoEmbarcacion embarcación en que se navega
-     */
     public PaseoLacustre(String nombre, int duracionHoras, String tipoEmbarcacion) {
         super(nombre, duracionHoras);
         setTipoEmbarcacion(tipoEmbarcacion);
     }
 
-    /** @return el tipo de embarcación */
     public String getTipoEmbarcacion() {
         return tipoEmbarcacion;
     }
 
-    /** @param tipoEmbarcacion embarcación en que se navega */
     public void setTipoEmbarcacion(String tipoEmbarcacion) {
         if (tipoEmbarcacion == null || tipoEmbarcacion.isBlank()) {
             throw new IllegalArgumentException("El tipo de embarcación no puede estar vacío.");
         }
         if (!tipoEmbarcacion.matches("[\\p{L}\\p{N} .,'-]+")) {
-            throw new IllegalArgumentException("El tipo de embarcación contiene caracteres no permitidos.");
+            throw new IllegalArgumentException("Usa solo letras, números, espacios, puntos, comas, apóstrofes o guiones.");
         }
         this.tipoEmbarcacion = tipoEmbarcacion;
     }
 
-    /** Muestra la información propia del paseo lacustre. */
     @Override
-    public void mostrarInformacion() {
-        System.out.println("Paseo lacustre: " + getNombre());
-        System.out.println("Duración: " + getDuracionHoras() + " horas");
-        System.out.println("Tipo de embarcación: " + tipoEmbarcacion);
-        System.out.println("----------------------------------");
+    public String mostrarInformacion() {
+        return "Paseo lacustre: " + getNombre() + "\n"
+                + "Duración: " + getDuracionHoras() + " horas\n"
+                + "Tipo de embarcación: " + tipoEmbarcacion + "\n"
+                + "----------------------------------";
     }
 
     @Override

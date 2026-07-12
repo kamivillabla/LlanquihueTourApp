@@ -27,11 +27,13 @@ public class GestorServicios {
         servicios.add(new ExcursionCultural("Patrimonio de Puerto Varas", 4, "Iglesia del Sagrado Corazón"));
     }
 
-    /** Recorre la colección y llama a {@code mostrarInformacion()} de cada servicio (polimorfismo). */
-    public void mostrarServicios() {
+    /** @return la información de cada servicio, concatenada (polimorfismo vía {@code mostrarInformacion()}) */
+    public String formatearServicios() {
+        StringBuilder texto = new StringBuilder();
         for (ServicioTuristico servicio : servicios) {
-            servicio.mostrarInformacion();
+            texto.append(servicio.mostrarInformacion()).append("\n");
         }
+        return texto.toString();
     }
 
     /** @return la colección de servicios turísticos */

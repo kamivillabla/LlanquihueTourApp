@@ -1,10 +1,8 @@
 # LlanquihueTour
 
-Sistema modular en Java para la agencia turística **Llanquihue Tour**. Carga
-guías, tours, clientes e inscripciones desde archivos de texto, los almacena en
-colecciones y muestra, busca y filtra los resultados por consola. Además modela
-los distintos tipos de servicios turísticos mediante una jerarquía de clases con
-herencia y los recorre aplicando **polimorfismo**.
+Sistema en Java para la agencia turística **Llanquihue Tour**: gestiona guías,
+vehículos, colaboradores externos, tours, clientes y servicios turísticos
+desde una interfaz gráfica de escritorio (`JFrame`).
 
 > Desarrollo Orientado a Objetos I — Duoc UC
 
@@ -12,12 +10,11 @@ herencia y los recorre aplicando **polimorfismo**.
 
 ## Descripción
 
-La aplicación lee cuatro archivos de datos (`guias.txt`, `tours.txt`,
-`clientes.txt`, `inscripciones.txt`), convierte cada línea en objetos del modelo
-y los guarda en colecciones genéricas. La lógica está separada por
-responsabilidades en paquetes (`model`, `data`, `service`, `util`, `ui`),
-aplicando composición entre clases, herencia, validaciones y manejo de
-excepciones.
+La aplicación carga datos desde archivos de texto (`guias.txt`, `tours.txt`,
+`clientes.txt`, `inscripciones.txt`), los organiza en colecciones y los
+muestra en una ventana con menús. El código está organizado en paquetes
+(`model`, `data`, `service`, `util`, `ui`) y aplica composición, herencia,
+interfaces, polimorfismo, `instanceof`, validaciones y manejo de excepciones.
 
 ---
 
@@ -25,107 +22,94 @@ excepciones.
 
 ```
 LlanquihueTour/
-├── resources/              → Archivos de datos externos
-│   ├── guias.txt
-│   ├── tours.txt
-│   ├── clientes.txt
-│   └── inscripciones.txt
+├── resources/          → guias.txt, tours.txt, clientes.txt, inscripciones.txt
 └── src/
-    ├── model/              → Clases de dominio
-    │   ├── Persona.java             → Clase base (tiene una Direccion)
-    │   ├── Guia.java                → Hereda de Persona
-    │   ├── Cliente.java             → Hereda de Persona
-    │   ├── Direccion.java           → Clase compuesta
-    │   ├── Tour.java                → Tiene un Guia y una lista de Cliente inscritos
-    │   ├── ServicioTuristico.java   → Superclase: nombre, duracionHoras
-    │   ├── RutaGastronomica.java    → Hereda de ServicioTuristico (+ numeroDeParadas)
-    │   ├── PaseoLacustre.java       → Hereda de ServicioTuristico (+ tipoEmbarcacion)
-    │   └── ExcursionCultural.java   → Hereda de ServicioTuristico (+ lugarHistorico)
-    ├── data/              → Lectura de archivos y construcción de objetos
-    │   ├── GestorDatos.java         → Carga guías, tours, clientes e inscripciones
-    │   └── GestorServicios.java     → Colección polimórfica List<ServicioTuristico>
-    ├── service/           → Operaciones de negocio (mostrar, buscar, filtrar)
-    │   └── GestorTours.java
-    ├── util/              → Librería propia reutilizable
-    │   ├── Validador.java
-    │   ├── RutInvalidoException.java
-    │   └── FormatoArchivoInvalidoException.java
-    └── ui/                → Punto de entrada (coordina y muestra resultados)
-        └── Main.java
+    ├── model/          → Clases de dominio
+    ├── data/           → Carga de archivos y colecciones (GestorDatos, GestorServicios, GestorEntidades)
+    ├── service/        → GestorTours
+    ├── util/           → Validador y excepciones propias
+    └── ui/             → VentanaPrincipal (JFrame) y sus paneles
 ```
 
 ---
 
-## Paquetes y clases
+## Clases e interfaces
 
-| Paquete   | Clase                            | Responsabilidad |
-|-----------|----------------------------------|-----------------|
-| `model`   | `Persona`                        | Clase base; **tiene una** `Direccion` |
-| `model`   | `Guia`, `Cliente`                | Heredan de `Persona` |
-| `model`   | `Direccion`                      | Dirección física (clase compuesta) |
-| `model`   | `Tour`                           | **Tiene un** `Guia` y **tiene una** lista de `Cliente` inscritos |
-| `model`   | `ServicioTuristico`              | Superclase: atributos comunes `nombre` y `duracionHoras` |
-| `model`   | `RutaGastronomica`               | **Es un** `ServicioTuristico` (+ `numeroDeParadas`) |
-| `model`   | `PaseoLacustre`                  | **Es un** `ServicioTuristico` (+ `tipoEmbarcacion`) |
-| `model`   | `ExcursionCultural`              | **Es un** `ServicioTuristico` (+ `lugarHistorico`) |
-| `data`    | `GestorDatos`                    | Lee archivos y crea objetos |
-| `data`    | `GestorServicios`                | Colección polimórfica `List<ServicioTuristico>`: la carga y la recorre |
-| `service` | `GestorTours`                    | Mostrar, buscar y filtrar la colección |
-| `util`    | `Validador`                      | Validación reutilizable de campos (método `static`) |
-| `util`    | `RutInvalidoException`           | Excepción personalizada (RUT inválido) |
-| `util`    | `FormatoArchivoInvalidoException`| Excepción personalizada (línea mal formada) |
-| `ui`      | `Main`                           | Coordina la ejecución y muestra los resultados |
+| Paquete   | Clase                                                          | Rol |
+|-----------|------------------------------------------------------------------|-----|
+| `model`   | `Persona`                                                        | Clase base de personas (tiene una `Direccion`) |
+| `model`   | `GuiaTuristico`, `Cliente`                                       | Heredan de `Persona`. `GuiaTuristico` además implementa `Registrable` |
+| `model`   | `Direccion`                                                      | Clase compuesta |
+| `model`   | `Tour`                                                           | Tiene un `GuiaTuristico` y una lista de `Cliente` inscritos |
+| `model`   | `ServicioTuristico`                                              | Superclase de servicios turísticos |
+| `model`   | `RutaGastronomica`, `PaseoLacustre`, `ExcursionCultural`         | Subclases de `ServicioTuristico` |
+| `model`   | `Registrable`                                                    | Interfaz: contrato `mostrarResumen()` |
+| `model`   | `RecursoAgencia`                                                 | Superclase de recursos registrables |
+| `model`   | `Vehiculo`, `ColaboradorExterno`                                 | Heredan de `RecursoAgencia` e implementan `Registrable` |
+| `data`    | `GestorDatos`                                                    | Lee archivos y crea objetos |
+| `data`    | `GestorServicios`                                                | Colección `List<ServicioTuristico>` |
+| `data`    | `GestorEntidades`                                                | Colección `List<Registrable>`; usa `instanceof` para diferenciar por tipo |
+| `service` | `GestorTours`                                                    | Buscar y filtrar tours |
+| `util`    | `Validador`, `RutInvalidoException`, `FormatoArchivoInvalidoException` | Validación y excepciones propias |
+| `ui`      | `VentanaPrincipal`                                               | Ventana única (`JFrame` + `CardLayout`) |
+| `ui`      | `PanelMenuPrincipal`, `PanelMenuEntidades`, `PanelResultado`     | Menús y vista de resultados |
+| `ui`      | `PanelFormularioGuia`, `PanelFormularioVehiculo`, `PanelFormularioColaborador` | Formularios de registro (heredan de `PanelFormularioBase`) |
 
-### Composición entre clases (*tiene un/a*)
+### Composición
 
 - `Persona` **tiene una** `Direccion`.
-- `Tour` **tiene un** `Guia` (y ese guía, a su vez, tiene su `Direccion`).
-- `Tour` **tiene una** lista (`ArrayList`) de `Cliente` inscritos.
+- `Tour` **tiene un** `GuiaTuristico` y una lista de `Cliente` inscritos.
 
-### Herencia (*es un/a*)
+### Herencia
 
 ```
-Persona                       ServicioTuristico (superclase)
-├── Guia                      ├── RutaGastronomica   (+ numeroDeParadas)
-└── Cliente                   ├── PaseoLacustre      (+ tipoEmbarcacion)
-                              └── ExcursionCultural  (+ lugarHistorico)
+Persona                  ServicioTuristico          RecursoAgencia
+├── GuiaTuristico         ├── RutaGastronomica        ├── Vehiculo
+└── Cliente               ├── PaseoLacustre           └── ColaboradorExterno
+                          └── ExcursionCultural
 ```
-
-Lo común vive una sola vez en la superclase y lo específico en cada subclase.
-Cada subclase llama a `super(...)` para inicializar lo heredado y sobrescribe con
-`@Override` tanto `toString()` (reutilizando `super.toString()`) como
-`mostrarInformacion()`.
 
 ### Polimorfismo
 
-`ServicioTuristico` define el método `mostrarInformacion()` con una
-implementación base, y cada subclase lo **sobrescribe** (`@Override`) para
-imprimir sus datos propios (paradas, embarcación o lugar histórico).
+`ServicioTuristico` define `mostrarInformacion()`, y cada subclase lo
+sobrescribe con `@Override`. `GestorServicios` recorre `List<ServicioTuristico>`
+con `for-each` y cada objeto ejecuta su propia versión del método.
 
-`GestorServicios` guarda todos los servicios en **una sola colección
-polimórfica**:
+---
 
-```java
-private final List<ServicioTuristico> servicios = new ArrayList<>();
-```
+## Interfaz Registrable
 
-En esa lista conviven objetos de las tres subclases. Al recorrerla con
-`for-each` desde una referencia de tipo superclase, Java ejecuta
-automáticamente la versión correcta del método según el objeto real:
+`GuiaTuristico`, `Vehiculo` y `ColaboradorExterno` vienen de **dos jerarquías
+distintas** (`Persona` y `RecursoAgencia`) pero implementan la misma interfaz:
 
 ```java
-for (ServicioTuristico servicio : servicios) {
-    servicio.mostrarInformacion();   // cada tipo responde a su manera
+public interface Registrable {
+    String mostrarResumen();
 }
 ```
 
-> Una lista, varios tipos de objetos, un mismo método, distintos resultados.
+`GestorEntidades` los guarda a todos en una sola `List<Registrable>` y usa
+`instanceof` para mostrar un detalle distinto según el tipo real de cada
+objeto (idiomas de un guía, capacidad de un vehículo, empresa de un
+colaborador).
+
+`GuiaTuristico` es una única clase: la misma que se carga desde `guias.txt`,
+se asigna a un `Tour`, y se gestiona en la colección `Registrable`.
+
+---
+
+## GUI
+
+La ventana (`VentanaPrincipal`, un `JFrame` con `CardLayout`) da acceso a
+Gestión, Sistema de Tours y Servicios Turísticos sin abrir ventanas nuevas.
+Los formularios de registro validan cada campo mientras se escribe y no
+piden re-ingresar los datos si uno de los campos queda mal.
 
 ---
 
 ## Formato de los archivos
 
-**guias.txt** (12 campos separados por `;`):
+**guias.txt** (12 campos):
 ```
 nombre;apellido;rut;correo;calle;numero;ciudad;region;especialidad;idiomas;aniosExperiencia;disponible
 ```
@@ -140,14 +124,13 @@ nombre;tipo;destino;precio;cupos;rutGuia
 nombre;apellido;rut;correo;calle;numero;ciudad;region;nacionalidad;tipoTurismo
 ```
 
-**inscripciones.txt** (2 campos; vincula un cliente a un tour):
+**inscripciones.txt** (2 campos):
 ```
 rutCliente;nombreTour
 ```
 
-Si una línea viene mal formada (campos incompletos, número inválido, RUT con mal
-formato, guía/tour/cliente inexistente, tour sin cupos o cliente ya inscrito), se
-lanza una excepción, se avisa por consola y se continúa con las demás líneas.
+Las líneas mal formadas se omiten y quedan registradas en
+`GestorDatos.getAvisos()`, que `Main` muestra al iniciar.
 
 ---
 
@@ -155,9 +138,9 @@ lanza una excepción, se avisa por consola y se continúa con las demás líneas
 
 ### Desde IntelliJ IDEA
 
-1. Abrir la carpeta del proyecto en IntelliJ IDEA.
-2. Verificar el SDK de Java (File → Project Structure → SDK). Probado con **Java 21**.
-3. Ejecutar la clase `Main` ubicada en `src/ui/Main.java`.
+1. Abrir la carpeta del proyecto.
+2. Verificar el SDK de Java (probado con **Java 21**).
+3. Ejecutar la clase `Main` (`src/ui/Main.java`).
 
 ### Desde terminal
 
@@ -167,74 +150,6 @@ java -cp out ui.Main
 ```
 
 > Ejecutar desde la raíz del proyecto, para que las rutas `resources/*.txt` se resuelvan correctamente.
-
----
-
-## Funcionalidad
-
-- `GestorDatos` lee cada archivo línea por línea, separa con `split(";")`, valida
-  la cantidad de campos, convierte números con `parseInt` y crea los objetos.
-- Los objetos se almacenan en `ArrayList<Guia>`, `ArrayList<Tour>` y `ArrayList<Cliente>`.
-- Cada `Tour` mantiene su propia lista (`ArrayList<Cliente>`) de inscritos,
-  controla los cupos disponibles y evita inscripciones duplicadas.
-- `GestorTours` recorre la colección con `for-each` y ofrece:
-  - Mostrar todos los tours.
-  - Buscar un tour por nombre.
-  - Filtrar por tipo, por cupos disponibles y por precio máximo.
-  - Contar tours por tipo usando un mapa clave-valor (`HashMap` ordenado con `TreeMap`).
-- Las inscripciones se cargan desde `inscripciones.txt` y se muestran agrupadas por tour.
-- `GestorServicios` carga la colección polimórfica `List<ServicioTuristico>` con
-  seis servicios de las tres subclases y la recorre con `for-each` llamando a
-  `mostrarInformacion()` desde la referencia de la superclase; cada objeto
-  ejecuta su propia versión del método (polimorfismo). `Main` invoca este flujo.
-
-Salida de los servicios turísticos en consola:
-
-```
---- SERVICIOS TURÍSTICOS DISPONIBLES ---
-Ruta gastronómica: Sabores del Lago
-Duración: 4 horas
-Número de paradas: 5
-----------------------------------
-Ruta gastronómica: Ruta del Queso Artesanal
-Duración: 3 horas
-Número de paradas: 4
-----------------------------------
-Paseo lacustre: Navegación Lago Llanquihue
-Duración: 2 horas
-Tipo de embarcación: Lancha turística
-----------------------------------
-Paseo lacustre: Atardecer Lacustre
-Duración: 3 horas
-Tipo de embarcación: Catamarán
-----------------------------------
-Excursión cultural: Historia de Frutillar
-Duración: 3 horas
-Lugar histórico: Teatro del Lago
-----------------------------------
-Excursión cultural: Patrimonio de Puerto Varas
-Duración: 4 horas
-Lugar histórico: Iglesia del Sagrado Corazón
-----------------------------------
-```
-
----
-
-## Demostración de validaciones
-
-Al final de la ejecución, `Main` incluye una sección **DEMOSTRACIÓN DE VALIDACIONES**
-que provoca errores a propósito (dentro de bloques `try-catch`) para evidenciar que
-las validaciones y excepciones del sistema funcionan. Por ejemplo:
-
-```
-Dirección rechazada -> El número debe ser mayor que cero.
-Guía rechazado -> RUT inválido: 'SINFORMATO'. El formato debe ser XXXXXXXX-X.
-Tour rechazado -> El precio debe ser mayor a 0.
-Inscripción rechazada -> El tour "Tour Lago Llanquihue" no tiene cupos disponibles.
-Inscripción rechazada -> El cliente Asuna Yuuki ya está inscrito en el tour "Tour Volcan Osorno".
-```
-
-Estos errores son intencionales: los archivos de datos reales permanecen válidos.
 
 ---
 

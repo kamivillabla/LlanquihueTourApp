@@ -3,9 +3,9 @@ package model;
 import java.util.ArrayList;
 
 /**
- * Un tour de la agencia. Tiene un {@link Guia} asignado y una lista de
- * {@link Cliente} inscritos. Los cupos disponibles se calculan restando los
- * inscritos a la capacidad total.
+ * Un tour de la agencia. Tiene un {@link GuiaTuristico} asignado y una lista
+ * de {@link Cliente} inscritos. Los cupos disponibles se calculan restando
+ * los inscritos a la capacidad total.
  */
 public class Tour {
 
@@ -14,10 +14,10 @@ public class Tour {
     private String destino;
     private int precio;
     private int cupos;
-    private Guia guia;
+    private GuiaTuristico guia;
     private ArrayList<Cliente> inscritos;
 
-    public Tour(String nombre, String tipo, String destino, int precio, int cupos, Guia guia) {
+    public Tour(String nombre, String tipo, String destino, int precio, int cupos, GuiaTuristico guia) {
         setNombre(nombre);
         setTipo(tipo);
         setDestino(destino);
@@ -36,7 +36,7 @@ public class Tour {
             throw new IllegalArgumentException("El nombre del tour no puede estar vacío.");
         }
         if (!nombre.matches("[\\p{L}\\p{N} .,'-]+")) {
-            throw new IllegalArgumentException("El nombre del tour contiene caracteres no permitidos.");
+            throw new IllegalArgumentException("Usa solo letras, números, espacios, puntos, comas, apóstrofes o guiones.");
         }
         this.nombre = nombre;
     }
@@ -97,11 +97,11 @@ public class Tour {
         this.cupos = cupos;
     }
 
-    public Guia getGuia() {
+    public GuiaTuristico getGuia() {
         return guia;
     }
 
-    public void setGuia(Guia guia) {
+    public void setGuia(GuiaTuristico guia) {
         if (guia == null) {
             throw new IllegalArgumentException("El tour debe tener un guía asignado.");
         }

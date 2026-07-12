@@ -23,61 +23,71 @@ public class GestorTours {
         return tours.size();
     }
 
-    /** Recorre la colección completa e imprime cada tour. */
-    public void mostrarTodos() {
+    /** @return el texto de todos los tours de la colección, uno por línea */
+    public String formatearTodos() {
         if (tours.isEmpty()) {
-            System.out.println("No hay tours cargados.");
-            return;
+            return "No hay tours cargados.";
         }
+        StringBuilder texto = new StringBuilder();
         for (Tour tour : tours) {
-            System.out.println(tour);
+            texto.append(tour).append("\n");
         }
+        return texto.toString();
     }
 
-    /** Búsqueda: muestra el/los tour(es) cuyo nombre coincide exactamente. */
-    public void buscarPorNombre(String nombreBuscado) {
+    /** @return el/los tour(es) cuyo nombre coincide exactamente con {@code nombreBuscado} */
+    public String formatearBusqueda(String nombreBuscado) {
+        StringBuilder texto = new StringBuilder();
         boolean encontrado = false;
         for (Tour tour : tours) {
             if (tour.getNombre().equalsIgnoreCase(nombreBuscado)) {
-                System.out.println("Encontrado: " + tour);
+                texto.append("Encontrado: ").append(tour).append("\n");
                 encontrado = true;
             }
         }
         if (!encontrado) {
-            System.out.println("No se encontró un tour llamado \"" + nombreBuscado + "\".");
+            texto.append("No se encontró un tour llamado \"").append(nombreBuscado).append("\".");
         }
+        return texto.toString();
     }
 
-    /** Filtro: muestra todos los tours de un tipo determinado. */
-    public void filtrarPorTipo(String tipoBuscado) {
+    /** @return los tours de un tipo determinado */
+    public String formatearPorTipo(String tipoBuscado) {
+        StringBuilder texto = new StringBuilder();
         for (Tour tour : tours) {
             if (tour.getTipo().equalsIgnoreCase(tipoBuscado)) {
-                System.out.println(tour);
+                texto.append(tour).append("\n");
             }
         }
+        return texto.toString();
     }
 
-    /** Filtro: muestra los tours que aún tienen cupos disponibles. */
-    public void filtrarConCupos() {
+    /** @return los tours que aún tienen cupos disponibles */
+    public String formatearConCupos() {
+        StringBuilder texto = new StringBuilder();
         for (Tour tour : tours) {
             if (tour.getCuposDisponibles() > 0) {
-                System.out.println(tour);
+                texto.append(tour).append("\n");
             }
         }
+        return texto.toString();
     }
 
-    /** Filtro: muestra los tours con precio menor o igual al máximo indicado. */
-    public void filtrarPorPrecioMaximo(int precioMaximo) {
+    /** @return los tours con precio menor o igual al máximo indicado */
+    public String formatearPorPrecioMaximo(int precioMaximo) {
+        StringBuilder texto = new StringBuilder();
         for (Tour tour : tours) {
             if (tour.getPrecio() <= precioMaximo) {
-                System.out.println(tour);
+                texto.append(tour).append("\n");
             }
         }
+        return texto.toString();
     }
 
     /**
      * Cuenta cuántos tours hay por tipo. Devuelve el mapa "tipo -> cantidad"
      * ordenado alfabéticamente (usa {@link TreeMap}).
+     * @return un mapa con la cantidad de tours por tipo, ordenado alfabéticamente
      */
     public Map<String, Integer> contarPorTipo() {
         HashMap<String, Integer> conteo = new HashMap<>();

@@ -5,6 +5,15 @@ import util.RutInvalidoException;
 /** Clase base que representa a cualquier persona vinculada a Llanquihue Tour. */
 public class Persona {
 
+    /** Patrón de nombre/apellido: solo letras y espacios. */
+    public static final String PATRON_NOMBRE = "[\\p{L} ]+";
+    public static final int LARGO_MAXIMO_NOMBRE = 50;
+    /** Patrón de RUT chileno: 7 u 8 dígitos, guion y dígito verificador. */
+    public static final String PATRON_RUT = "[0-9]{7,8}-[0-9kK]";
+    /** Patrón de correo: usuario@dominio.ext, sin espacios. */
+    public static final String PATRON_CORREO = "[^\\s@]+@[^\\s@]+\\.[^\\s@]+";
+    public static final int LARGO_MAXIMO_CORREO = 60;
+
     private String nombre;
     private String apellido;
     private String rut;
@@ -26,10 +35,13 @@ public class Persona {
 
     public void setNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException("El nombre no puede estar vacío.");
+            throw new IllegalArgumentException("Falta el nombre.");
         }
-        if (!nombre.matches("[\\p{L} ]+")) {
-            throw new IllegalArgumentException("El nombre solo puede contener letras y espacios.");
+        if (nombre.length() > LARGO_MAXIMO_NOMBRE) {
+            throw new IllegalArgumentException("Ese nombre es muy largo (máximo " + LARGO_MAXIMO_NOMBRE + " caracteres).");
+        }
+        if (!nombre.matches(PATRON_NOMBRE)) {
+            throw new IllegalArgumentException("El nombre solo puede tener letras, sin números ni símbolos.");
         }
         this.nombre = nombre;
     }
@@ -40,10 +52,13 @@ public class Persona {
 
     public void setApellido(String apellido) {
         if (apellido == null || apellido.isBlank()) {
-            throw new IllegalArgumentException("El apellido no puede estar vacío.");
+            throw new IllegalArgumentException("Falta el apellido.");
         }
-        if (!apellido.matches("[\\p{L} ]+")) {
-            throw new IllegalArgumentException("El apellido solo puede contener letras y espacios.");
+        if (apellido.length() > LARGO_MAXIMO_NOMBRE) {
+            throw new IllegalArgumentException("Ese apellido es muy largo (máximo " + LARGO_MAXIMO_NOMBRE + " caracteres).");
+        }
+        if (!apellido.matches(PATRON_NOMBRE)) {
+            throw new IllegalArgumentException("El apellido solo puede tener letras, sin números ni símbolos.");
         }
         this.apellido = apellido;
     }
@@ -53,9 +68,9 @@ public class Persona {
     }
 
     public void setRut(String rut) throws RutInvalidoException {
-        if (rut == null || !rut.matches("[0-9]+-[0-9kK]")) {
+        if (rut == null || !rut.matches(PATRON_RUT)) {
             throw new RutInvalidoException(
-                    "RUT inválido: '" + rut + "'. El formato debe ser XXXXXXXX-X.");
+                    "El RUT debe tener 7 u 8 números, un guion, y terminar en un número o la letra K. Ej: 12345678-9.");
         }
         this.rut = rut;
     }
@@ -65,8 +80,14 @@ public class Persona {
     }
 
     public void setCorreo(String correo) {
-        if (correo == null || !correo.matches("[^@]+@[^@]+\\.[^@]+")) {
-            throw new IllegalArgumentException("El correo debe tener el formato usuario@dominio.ext.");
+        if (correo == null || correo.isBlank()) {
+            throw new IllegalArgumentException("Falta el correo.");
+        }
+        if (correo.length() > LARGO_MAXIMO_CORREO) {
+            throw new IllegalArgumentException("Ese correo es muy largo (máximo " + LARGO_MAXIMO_CORREO + " caracteres).");
+        }
+        if (!correo.matches(PATRON_CORREO)) {
+            throw new IllegalArgumentException("Escribe un correo válido, por ejemplo: usuario@gmail.com");
         }
         this.correo = correo;
     }

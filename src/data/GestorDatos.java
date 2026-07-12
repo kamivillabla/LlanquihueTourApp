@@ -5,9 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 import model.Cliente;
 import model.Direccion;
-import model.Guia;
+import model.GuiaTuristico;
 import model.Tour;
 import util.FormatoArchivoInvalidoException;
 import util.RutInvalidoException;
@@ -15,16 +16,25 @@ import util.Validador;
 
 /**
  * Lee los archivos de texto y arma los objetos del modelo. Si una línea viene
- * mal formada, avisa por consola y sigue con las demás.
+ * mal formada, registra un aviso (ver {@link #getAvisos()}) y sigue con las demás.
  */
 public class GestorDatos {
+
+    private final List<String> avisos = new ArrayList<>();
+
+    /** @return los avisos acumulados durante la carga (líneas omitidas, errores de archivo) */
+    public List<String> getAvisos() {
+        return avisos;
+    }
 
     /**
      * Carga los guías desde el archivo. Formato (12 campos separados por ";"):
      * nombre;apellido;rut;correo;calle;numero;ciudad;region;especialidad;idiomas;aniosExperiencia;disponible
+     * @param rutaArchivo ruta del archivo de guías a leer
+     * @return los guías cargados correctamente (las líneas inválidas se omiten y quedan en {@link #getAvisos()})
      */
-    public ArrayList<Guia> cargarGuias(String rutaArchivo) {
-        ArrayList<Guia> guias = new ArrayList<>();
+    public ArrayList<GuiaTuristico> cargarGuias(String rutaArchivo) {
+        ArrayList<GuiaTuristico> guias = new ArrayList<>();
         int numeroLinea = 0;
 
         try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo, StandardCharsets.UTF_8))) {
@@ -47,7 +57,7 @@ public class GestorDatos {
                             partes[6].trim(),
                             partes[7].trim());
 
-                    Guia guia = new Guia(
+                    GuiaTuristico guia = new GuiaTuristico(
                             partes[0].trim(), partes[1].trim(), partes[2].trim(), partes[3].trim(),
                             direccion,
                             partes[8].trim(), partes[9].trim(),
@@ -58,11 +68,11 @@ public class GestorDatos {
 
                 } catch (FormatoArchivoInvalidoException | RutInvalidoException
                          | IllegalArgumentException e) {
-                    System.out.println("  [Aviso] Guía omitida (línea " + numeroLinea + "): " + e.getMessage());
+                    avisos.add("Guía omitida (línea " + numeroLinea + "): " + e.getMessage());
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error al leer el archivo de guías: " + e.getMessage());
+            avisos.add("Error al leer el archivo de guías: " + e.getMessage());
         }
 
         return guias;
@@ -71,8 +81,11 @@ public class GestorDatos {
     /**
      * Carga los tours y a cada uno le asigna su guía, buscándolo por RUT en la
      * lista ya cargada. Formato (6 campos): nombre;tipo;destino;precio;cupos;rutGuia
+     * @param rutaArchivo ruta del archivo de tours a leer
+     * @param guias guías ya cargados, usados para resolver el RUT de cada tour
+     * @return los tours cargados correctamente (las líneas inválidas se omiten y quedan en {@link #getAvisos()})
      */
-    public ArrayList<Tour> cargarTours(String rutaArchivo, ArrayList<Guia> guias) {
+    public ArrayList<Tour> cargarTours(String rutaArchivo, ArrayList<GuiaTuristico> guias) {
         ArrayList<Tour> tours = new ArrayList<>();
         int numeroLinea = 0;
 
@@ -91,7 +104,7 @@ public class GestorDatos {
                     }
 
                     String rutGuia = partes[5].trim();
-                    Guia guia = buscarGuiaPorRut(guias, rutGuia);
+                    GuiaTuristico guia = buscarGuiaPorRut(guias, rutGuia);
                     if (guia == null) {
                         throw new FormatoArchivoInvalidoException(
                                 "No existe un guía con RUT " + rutGuia + ".");
@@ -106,11 +119,11 @@ public class GestorDatos {
                     tours.add(tour);
 
                 } catch (FormatoArchivoInvalidoException | IllegalArgumentException e) {
-                    System.out.println("  [Aviso] Tour omitido (línea " + numeroLinea + "): " + e.getMessage());
+                    avisos.add("Tour omitido (línea " + numeroLinea + "): " + e.getMessage());
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error al leer el archivo de tours: " + e.getMessage());
+            avisos.add("Error al leer el archivo de tours: " + e.getMessage());
         }
 
         return tours;
@@ -119,6 +132,8 @@ public class GestorDatos {
     /**
      * Carga los clientes desde el archivo. Formato (10 campos):
      * nombre;apellido;rut;correo;calle;numero;ciudad;region;nacionalidad;tipoTurismo
+     * @param rutaArchivo ruta del archivo de clientes a leer
+     * @return los clientes cargados correctamente (las líneas inválidas se omiten y quedan en {@link #getAvisos()})
      */
     public ArrayList<Cliente> cargarClientes(String rutaArchivo) {
         ArrayList<Cliente> clientes = new ArrayList<>();
@@ -153,11 +168,11 @@ public class GestorDatos {
 
                 } catch (FormatoArchivoInvalidoException | RutInvalidoException
                          | IllegalArgumentException e) {
-                    System.out.println("  [Aviso] Cliente omitido (línea " + numeroLinea + "): " + e.getMessage());
+                    avisos.add("Cliente omitido (línea " + numeroLinea + "): " + e.getMessage());
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error al leer el archivo de clientes: " + e.getMessage());
+            avisos.add("Error al leer el archivo de clientes: " + e.getMessage());
         }
 
         return clientes;
@@ -165,7 +180,10 @@ public class GestorDatos {
 
     /**
      * Inscribe cada cliente en su tour según el archivo. Si falta el cliente o
-     * el tour, o no hay cupos, avisa y sigue. Formato (2 campos): rutCliente;nombreTour
+     * el tour, o no hay cupos, registra un aviso y sigue. Formato (2 campos): rutCliente;nombreTour
+     * @param rutaArchivo ruta del archivo de inscripciones a leer
+     * @param tours tours ya cargados, usados para resolver el tour de cada inscripción
+     * @param clientes clientes ya cargados, usados para resolver el cliente de cada inscripción
      */
     public void cargarInscripciones(String rutaArchivo, ArrayList<Tour> tours, ArrayList<Cliente> clientes) {
         int numeroLinea = 0;
@@ -200,17 +218,17 @@ public class GestorDatos {
                     tour.inscribirCliente(cliente);
 
                 } catch (FormatoArchivoInvalidoException | IllegalStateException | IllegalArgumentException e) {
-                    System.out.println("  [Aviso] Inscripción omitida (línea " + numeroLinea + "): " + e.getMessage());
+                    avisos.add("Inscripción omitida (línea " + numeroLinea + "): " + e.getMessage());
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error al leer el archivo de inscripciones: " + e.getMessage());
+            avisos.add("Error al leer el archivo de inscripciones: " + e.getMessage());
         }
     }
 
     /** Busca un guía por su RUT dentro de la lista. Retorna null si no existe. */
-    private Guia buscarGuiaPorRut(ArrayList<Guia> guias, String rut) {
-        for (Guia guia : guias) {
+    private GuiaTuristico buscarGuiaPorRut(ArrayList<GuiaTuristico> guias, String rut) {
+        for (GuiaTuristico guia : guias) {
             if (guia.getRut().equalsIgnoreCase(rut)) {
                 return guia;
             }
