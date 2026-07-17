@@ -46,6 +46,10 @@ public class PanelMenuPrincipal extends JPanel {
         botones.add(Box.createVerticalStrut(12));
         botones.add(crearBoton("Sistema de Tours", e -> ventana.mostrarSistemaTours()));
         botones.add(Box.createVerticalStrut(12));
+        botones.add(crearBoton("Registrar reserva", e -> ventana.mostrarFormularioReserva()));
+        botones.add(Box.createVerticalStrut(12));
+        botones.add(crearBoton("Buscar cliente por RUT", e -> ventana.buscarClientePorRut()));
+        botones.add(Box.createVerticalStrut(12));
         botones.add(crearBoton("Servicios Turísticos", e -> ventana.mostrarServiciosTuristicos()));
         botones.add(Box.createVerticalStrut(24));
         botones.add(crearBoton("Salir", e -> System.exit(0)));

@@ -8,8 +8,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.Cliente;
+import model.ColaboradorExterno;
 import model.GuiaTuristico;
 import model.Tour;
+import model.Vehiculo;
 import service.GestorTours;
 
 /**
@@ -22,12 +24,18 @@ public class Main {
         aplicarLookAndFeel();
 
         GestorDatos gestorDatos = new GestorDatos();
-        ArrayList<GuiaTuristico> guias = gestorDatos.cargarGuias("resources/guias.txt");
-        ArrayList<Tour> tours = gestorDatos.cargarTours("resources/tours.txt", guias);
-        ArrayList<Cliente> clientes = gestorDatos.cargarClientes("resources/clientes.txt");
-        gestorDatos.cargarInscripciones("resources/inscripciones.txt", tours, clientes);
+        ArrayList<GuiaTuristico> guias = gestorDatos.cargarGuias(GestorDatos.RUTA_GUIAS);
+        ArrayList<Tour> tours = gestorDatos.cargarTours(GestorDatos.RUTA_TOURS, guias);
+        ArrayList<Cliente> clientes = gestorDatos.cargarClientes(GestorDatos.RUTA_CLIENTES);
+        gestorDatos.cargarInscripciones(GestorDatos.RUTA_INSCRIPCIONES, tours, clientes);
+        ArrayList<Vehiculo> vehiculos = gestorDatos.cargarVehiculos(GestorDatos.RUTA_VEHICULOS);
+        ArrayList<ColaboradorExterno> colaboradores = gestorDatos.cargarColaboradores(GestorDatos.RUTA_COLABORADORES);
+
         GestorTours gestorTours = new GestorTours(tours);
         GestorEntidades gestorEntidades = new GestorEntidades();
+        gestorEntidades.agregar(guias);
+        gestorEntidades.agregar(vehiculos);
+        gestorEntidades.agregar(colaboradores);
 
         if (!gestorDatos.getAvisos().isEmpty()) {
             StringBuilder texto = new StringBuilder();
@@ -39,7 +47,7 @@ public class Main {
         }
 
         SwingUtilities.invokeLater(() -> {
-            VentanaPrincipal ventana = new VentanaPrincipal(guias, tours, clientes, gestorTours, gestorEntidades);
+            VentanaPrincipal ventana = new VentanaPrincipal(guias, tours, clientes, gestorTours, gestorEntidades, gestorDatos);
             ventana.setVisible(true);
         });
     }

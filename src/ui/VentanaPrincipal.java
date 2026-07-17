@@ -1,11 +1,13 @@
 package ui;
 
+import data.GestorDatos;
 import data.GestorEntidades;
 import data.GestorServicios;
 import java.awt.CardLayout;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import model.Cliente;
 import model.GuiaTuristico;
@@ -26,6 +28,7 @@ public class VentanaPrincipal extends JFrame {
     private static final String VISTA_FORM_GUIA = "formGuia";
     private static final String VISTA_FORM_VEHICULO = "formVehiculo";
     private static final String VISTA_FORM_COLABORADOR = "formColaborador";
+    private static final String VISTA_FORM_RESERVA = "formReserva";
 
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel contenedor = new JPanel(cardLayout);
@@ -36,14 +39,16 @@ public class VentanaPrincipal extends JFrame {
     private final ArrayList<Cliente> clientes;
     private final GestorTours gestorTours;
     private final GestorEntidades gestorEntidades;
+    private final GestorDatos gestorDatos;
 
     public VentanaPrincipal(ArrayList<GuiaTuristico> guias, ArrayList<Tour> tours, ArrayList<Cliente> clientes,
-                             GestorTours gestorTours, GestorEntidades gestorEntidades) {
+                             GestorTours gestorTours, GestorEntidades gestorEntidades, GestorDatos gestorDatos) {
         this.guias = guias;
         this.tours = tours;
         this.clientes = clientes;
         this.gestorTours = gestorTours;
         this.gestorEntidades = gestorEntidades;
+        this.gestorDatos = gestorDatos;
 
         setTitle("Llanquihue Tour");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,6 +62,7 @@ public class VentanaPrincipal extends JFrame {
         contenedor.add(new PanelFormularioGuia(this), VISTA_FORM_GUIA);
         contenedor.add(new PanelFormularioVehiculo(this), VISTA_FORM_VEHICULO);
         contenedor.add(new PanelFormularioColaborador(this), VISTA_FORM_COLABORADOR);
+        contenedor.add(new PanelFormularioReserva(this, clientes, tours), VISTA_FORM_RESERVA);
         setContentPane(contenedor);
 
         mostrarMenuPrincipal();
@@ -64,6 +70,24 @@ public class VentanaPrincipal extends JFrame {
 
     public GestorEntidades getGestorEntidades() {
         return gestorEntidades;
+    }
+
+    public GestorDatos getGestorDatos() {
+        return gestorDatos;
+    }
+
+    /** Pide un RUT al usuario y muestra la ficha completa del cliente encontrado, si existe. */
+    public void buscarClientePorRut() {
+        String rut = JOptionPane.showInputDialog(this, "Ingresa el RUT del cliente (ej: 12345678-9):",
+                "Buscar cliente por RUT", JOptionPane.QUESTION_MESSAGE);
+        if (rut == null || rut.isBlank()) {
+            return;
+        }
+        Cliente encontrado = gestorDatos.buscarClientePorRut(clientes, rut.trim());
+        String texto = encontrado != null
+                ? encontrado.toString()
+                : "No se encontró un cliente con RUT " + rut.trim() + ".";
+        mostrarResultado("Buscar cliente por RUT", texto, this::mostrarMenuPrincipal);
     }
 
     public void mostrarMenuPrincipal() {
@@ -84,6 +108,10 @@ public class VentanaPrincipal extends JFrame {
 
     public void mostrarFormularioColaborador() {
         cardLayout.show(contenedor, VISTA_FORM_COLABORADOR);
+    }
+
+    public void mostrarFormularioReserva() {
+        cardLayout.show(contenedor, VISTA_FORM_RESERVA);
     }
 
     /** Arma y muestra el resumen del sistema de Tours. */

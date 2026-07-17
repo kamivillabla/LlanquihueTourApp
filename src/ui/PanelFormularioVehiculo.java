@@ -3,6 +3,7 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -88,12 +89,14 @@ public class PanelFormularioVehiculo extends PanelFormularioBase {
         }
 
         try {
-            ventana.getGestorEntidades().agregar(new Vehiculo(campoCodigo.getTexto(), campoNombre.getTexto(), true,
-                    campoPatente.getTexto(), campoTipo.getTexto(), Integer.parseInt(campoCapacidad.getTexto())));
+            Vehiculo nuevoVehiculo = new Vehiculo(campoCodigo.getTexto(), campoNombre.getTexto(), true,
+                    campoPatente.getTexto(), campoTipo.getTexto(), Integer.parseInt(campoCapacidad.getTexto()));
+            ventana.getGestorEntidades().agregar(nuevoVehiculo);
+            ventana.getGestorDatos().guardarVehiculo(nuevoVehiculo);
             limpiar();
             JOptionPane.showMessageDialog(ventana, "Vehículo registrado con éxito.");
             ventana.mostrarMenuEntidades();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IOException e) {
             labelError.setText(e.getMessage());
         }
     }

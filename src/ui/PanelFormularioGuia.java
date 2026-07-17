@@ -3,6 +3,7 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -126,14 +127,16 @@ public class PanelFormularioGuia extends PanelFormularioBase {
         try {
             Direccion direccion = new Direccion(campoCalle.getTexto(), Integer.parseInt(campoNumero.getTexto()),
                     campoCiudad.getTexto(), campoRegion.getTexto());
-            ventana.getGestorEntidades().agregar(new GuiaTuristico(
+            GuiaTuristico nuevoGuia = new GuiaTuristico(
                     campoNombre.getTexto(), campoApellido.getTexto(), campoRut.getTexto(), campoCorreo.getTexto(),
                     direccion, campoEspecialidad.getTexto(), campoIdiomas.getTexto(),
-                    Integer.parseInt(campoAnios.getTexto()), true));
+                    Integer.parseInt(campoAnios.getTexto()), true);
+            ventana.getGestorEntidades().agregar(nuevoGuia);
+            ventana.getGestorDatos().guardarGuia(nuevoGuia);
             limpiar();
             JOptionPane.showMessageDialog(ventana, "Guía turístico registrado con éxito.");
             ventana.mostrarMenuEntidades();
-        } catch (RutInvalidoException | IllegalArgumentException e) {
+        } catch (RutInvalidoException | IllegalArgumentException | IOException e) {
             labelError.setText(e.getMessage());
         }
     }

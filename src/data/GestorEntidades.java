@@ -25,6 +25,16 @@ public class GestorEntidades {
         entidades.add(entidad);
     }
 
+    /** Sobrecarga de {@link #agregar(Registrable)}: agrega varias entidades de una vez. */
+    public void agregar(List<? extends Registrable> entidades) {
+        if (entidades == null) {
+            throw new IllegalArgumentException("La lista de entidades no puede ser nula.");
+        }
+        for (Registrable entidad : entidades) {
+            agregar(entidad);
+        }
+    }
+
     /** @return el resumen de cada entidad, una por línea */
     public String formatearTodos() {
         StringBuilder texto = new StringBuilder();

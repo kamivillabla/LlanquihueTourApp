@@ -1,3 +1,15 @@
 Asuna;Yuuki;11223344-5;asuna.yuuki@correo.com;Calle Las Rosas;410;Santiago;Metropolitana;Chilena;Gastronomico
 Rukia;Kuchiki;55667788-K;rukia.kuchiki@mail.jp;Lago Llanquihue;10;Puerto Varas;Los Lagos;Japonesa;Cultural
 Nezuko;Kamado;22334455-6;nezuko.kamado@correo.cl;Av. Central;5;Llanquihue;Los Lagos;Chilena;Aventura
+Ichigo;Kurosaki;12000001-1;ichigo.kurosaki@correo.cl;Calle Los Aromos;120;Puerto Montt;Los Lagos;Japonesa;Aventura
+Mikasa;Ackerman;12000002-2;mikasa.ackerman@correo.com;Av. Los Volcanes;88;Frutillar;Los Lagos;Alemana;Cultural
+Gon;Freecss;12000003-3;gon.freecss@correo.cl;Pasaje El Bosque;15;Ensenada;Los Lagos;Chilena;Ecoturismo
+Killua;Zoldyck;12000004-4;killua.zoldyck@mail.jp;Camino Real;340;Puerto Varas;Los Lagos;Japonesa;Aventura
+Naruto;Uzumaki;12000005-5;naruto.uzumaki@correo.com;Calle El Roble;27;Puerto Octay;Los Lagos;Japonesa;Deportivo
+Sakura;Haruno;12000006-6;sakura.haruno@correo.cl;Av. Costanera;500;Frutillar;Los Lagos;Chilena;Familiar
+Tanjiro;Kamado;12000007-7;tanjiro.kamado@correo.cl;Calle Las Camelias;62;Llanquihue;Los Lagos;Japonesa;Cultural
+Zenitsu;Agatsuma;12000008-8;zenitsu.agatsuma@mail.jp;Pasaje Los Notros;9;Fresia;Los Lagos;Japonesa;Gastronomico
+Inosuke;Hashibira;12000009-9;inosuke.hashibira@correo.com;Camino Del Lago;210;Los Muermos;Los Lagos;Chilena;Aventura
+Eren;Yeager;12000010-0;eren.yeager@correo.cl;Av. Alemania;73;Osorno;Los Lagos;Alemana;Cultural
+Levi;Ackerman;12000011-1;levi.ackerman@correo.com;Calle San Martin;44;Puerto Montt;Los Lagos;Alemana;Deportivo
+Sasuke;Uchiha;12000012-2;sasuke.uchiha@mail.jp;Pasaje El Ciprés;18;Cochamo;Los Lagos;Japonesa;Ecoturismo

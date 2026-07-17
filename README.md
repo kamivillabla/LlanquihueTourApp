@@ -11,10 +11,13 @@ desde una interfaz gráfica de escritorio (`JFrame`).
 ## Descripción
 
 La aplicación carga datos desde archivos de texto (`guias.txt`, `tours.txt`,
-`clientes.txt`, `inscripciones.txt`), los organiza en colecciones y los
-muestra en una ventana con menús. El código está organizado en paquetes
-(`model`, `data`, `service`, `util`, `ui`) y aplica composición, herencia,
-interfaces, polimorfismo, `instanceof`, validaciones y manejo de excepciones.
+`clientes.txt`, `inscripciones.txt`, `vehiculos.txt`, `colaboradores.txt`), los
+organiza en colecciones y los muestra en una ventana con menús. El código está
+organizado en paquetes (`model`, `data`, `service`, `util`, `ui`) y aplica
+composición, herencia, interfaces, polimorfismo, sobrecarga, `instanceof`,
+validaciones y manejo de excepciones. Las entidades registradas desde la interfaz
+(guías, vehículos y colaboradores) se guardan en sus archivos de texto, por lo que
+quedan disponibles la próxima vez que se abre la aplicación.
 
 ---
 
@@ -22,7 +25,7 @@ interfaces, polimorfismo, `instanceof`, validaciones y manejo de excepciones.
 
 ```
 LlanquihueTour/
-├── resources/          → guias.txt, tours.txt, clientes.txt, inscripciones.txt
+├── resources/          → guias.txt, tours.txt, clientes.txt, inscripciones.txt, vehiculos.txt, colaboradores.txt
 └── src/
     ├── model/          → Clases de dominio
     ├── data/           → Carga de archivos y colecciones (GestorDatos, GestorServicios, GestorEntidades)
@@ -46,9 +49,9 @@ LlanquihueTour/
 | `model`   | `Registrable`                                                    | Interfaz: contrato `mostrarResumen()` |
 | `model`   | `RecursoAgencia`                                                 | Superclase de recursos registrables |
 | `model`   | `Vehiculo`, `ColaboradorExterno`                                 | Heredan de `RecursoAgencia` e implementan `Registrable` |
-| `data`    | `GestorDatos`                                                    | Lee archivos y crea objetos |
+| `data`    | `GestorDatos`                                                    | Lee archivos, crea objetos y guarda las nuevas entidades registradas |
 | `data`    | `GestorServicios`                                                | Colección `List<ServicioTuristico>` |
-| `data`    | `GestorEntidades`                                                | Colección `List<Registrable>`; usa `instanceof` para diferenciar por tipo |
+| `data`    | `GestorEntidades`                                                | Colección `List<Registrable>`; usa `instanceof` para diferenciar por tipo y sobrecarga `agregar()` |
 | `service` | `GestorTours`                                                    | Buscar y filtrar tours |
 | `util`    | `Validador`, `RutInvalidoException`, `FormatoArchivoInvalidoException` | Validación y excepciones propias |
 | `ui`      | `VentanaPrincipal`                                               | Ventana única (`JFrame` + `CardLayout`) |
@@ -74,6 +77,14 @@ Persona                  ServicioTuristico          RecursoAgencia
 `ServicioTuristico` define `mostrarInformacion()`, y cada subclase lo
 sobrescribe con `@Override`. `GestorServicios` recorre `List<ServicioTuristico>`
 con `for-each` y cada objeto ejecuta su propia versión del método.
+
+### Sobrecarga
+
+`GestorEntidades` ofrece dos versiones del método `agregar()`: una recibe una
+sola entidad (`agregar(Registrable)`) y otra recibe una lista completa
+(`agregar(List<? extends Registrable>)`). Ambas comparten el nombre pero se
+distinguen por sus parámetros, y `Main` usa la segunda para cargar de una vez
+las colecciones de guías, vehículos y colaboradores leídas desde archivo.
 
 ---
 
@@ -101,9 +112,11 @@ se asigna a un `Tour`, y se gestiona en la colección `Registrable`.
 ## GUI
 
 La ventana (`VentanaPrincipal`, un `JFrame` con `CardLayout`) da acceso a
-Gestión, Sistema de Tours y Servicios Turísticos sin abrir ventanas nuevas.
-Los formularios de registro validan cada campo mientras se escribe y no
-piden re-ingresar los datos si uno de los campos queda mal.
+Gestión, Sistema de Tours, Buscar cliente por RUT y Servicios Turísticos sin
+abrir ventanas nuevas. Los formularios de registro validan cada campo mientras
+se escribe y no piden re-ingresar los datos si uno de los campos queda mal.
+Al registrar un guía, vehículo o colaborador, la entidad se agrega a la
+colección en memoria y además se guarda en su archivo de texto.
 
 ---
 
@@ -129,8 +142,20 @@ nombre;apellido;rut;correo;calle;numero;ciudad;region;nacionalidad;tipoTurismo
 rutCliente;nombreTour
 ```
 
+**vehiculos.txt** (6 campos):
+```
+codigo;nombre;activo;patente;tipo;capacidad
+```
+
+**colaboradores.txt** (5 campos):
+```
+codigo;nombre;activo;empresa;servicioPrestado
+```
+
 Las líneas mal formadas se omiten y quedan registradas en
-`GestorDatos.getAvisos()`, que `Main` muestra al iniciar.
+`GestorDatos.getAvisos()`, que `Main` muestra al iniciar. Los archivos
+`vehiculos.txt` y `colaboradores.txt` empiezan vacíos y se van llenando con las
+entidades que se registran desde la interfaz.
 
 ---
 

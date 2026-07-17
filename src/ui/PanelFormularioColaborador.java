@@ -3,6 +3,7 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -84,12 +85,14 @@ public class PanelFormularioColaborador extends PanelFormularioBase {
         }
 
         try {
-            ventana.getGestorEntidades().agregar(new ColaboradorExterno(campoCodigo.getTexto(),
-                    campoNombre.getTexto(), true, campoEmpresa.getTexto(), campoServicio.getTexto()));
+            ColaboradorExterno nuevoColaborador = new ColaboradorExterno(campoCodigo.getTexto(),
+                    campoNombre.getTexto(), true, campoEmpresa.getTexto(), campoServicio.getTexto());
+            ventana.getGestorEntidades().agregar(nuevoColaborador);
+            ventana.getGestorDatos().guardarColaborador(nuevoColaborador);
             limpiar();
             JOptionPane.showMessageDialog(ventana, "Colaborador externo registrado con éxito.");
             ventana.mostrarMenuEntidades();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IOException e) {
             labelError.setText(e.getMessage());
         }
     }
